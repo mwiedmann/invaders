@@ -1,0 +1,33 @@
+{
+  "name": "invaders",
+  "license": "MIT",
+  "author": "Mark Wiedmann <mrwieds@gmail.com>",
+  "version": "0.1.0",
+  "homepage": "https://github.com/mwiedmann/wizard",
+  "main": "src/main.ts",
+  "dependencies": {
+    "phaser": "^3.55.2",
+    "matter-wrap": "^0.2.0"
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "5.30.0",
+    "@typescript-eslint/parser": "5.30.0",
+    "clean-webpack-plugin": "4.0.0",
+    "copy-webpack-plugin": "11.0.0",
+    "eslint": "8.18.0",
+    "eslint-config-prettier": "8.5.0",
+    "eslint-plugin-prettier": "4.1.0",
+    "html-webpack-plugin": "5.5.0",
+    "prettier": "2.7.1",
+    "ts-loader": "9.3.1",
+    "typescript": "4.7.4",
+    "webpack": "5.73.0",
+    "webpack-cli": "4.10.0",
+    "webpack-dev-server": "4.9.2"
+  },
+  "scripts": {
+    "start": "webpack-dev-server --config webpack.js --mode development --host localhost --port 3000 --progress",
+    "prod": "webpack-dev-server --config webpack.js --mode production --host localhost --port 3000 --progress",
+    "build": "yarn webpack --config webpack.js --mode production"
+  }
+}
