@@ -95,7 +95,14 @@ export class Enemy extends Phaser.Physics.Matter.Sprite implements Hitable {
   }
 
   update(time: number, delta: number, diveMax: number) {
-    if (this.dead || this.enemiesToWaitFor.findIndex((e) => !e.dead && !e.finishedFlyIn) > -1) {
+    // Wait to begin until group before is done flying in
+    const groupBeforeNotFinished = this.enemiesToWaitFor.findIndex((e) => !e.dead && !e.finishedFlyIn) > -1
+    if (this.dead || groupBeforeNotFinished) {
+      return
+    }
+
+    // Also, if hasn't done flyIn yet, and the player is currently dead...keep holding up
+    if (state.player.dead && this.enemiesToWaitFor.length > 0) {
       return
     }
 
@@ -206,7 +213,8 @@ export class Enemy extends Phaser.Physics.Matter.Sprite implements Hitable {
           (e) => e.returning || e.moveTo
         ).length
 
-        if (enemiesMovingCount < diveMax) {
+        // also don't dive if player is dead
+        if (!state.player.dead && enemiesMovingCount < diveMax) {
           // Dive to somewhere between 1/2 way down and off the bottom of screen (which wraps to the top)
           this.diveY = Phaser.Math.RND.between(
             settingsHelpers.fieldHeightMid,
@@ -227,16 +235,26 @@ export class Enemy extends Phaser.Physics.Matter.Sprite implements Hitable {
   }
 
   hit() {
+    let score = 25
     // Biggest score if on flyIn path
     if (this.path[0]) {
-      state.score += 200
+      score = 200
     } else if (this.moveTo) {
       // Medium score if diving
-      state.score += 100
-    } else {
-      // Least points if just marching at top
-      state.score += 25
+      score = 100
     }
+
+    state.player.scorePoints(score)
+
+    state.fireParticleManager.createEmitter({
+      speed: 150,
+      blendMode: 'ADD',
+      lifespan: 700,
+      maxParticles: 15,
+      scale: 0.7,
+      x: this.x,
+      y: this.y
+    })
 
     state.enemies.remove(this)
     this.dead = true

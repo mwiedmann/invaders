@@ -32,6 +32,7 @@ export class GameScene extends Phaser.Scene {
     this.load.spritesheet('enemy1', 'images/enemy1.png', { frameWidth: 84, frameHeight: 104 })
     this.load.image('enemy-laser', 'images/enemy-laser.png')
     this.load.spritesheet('particle', 'images/particle.png', { frameWidth: 16 })
+    this.load.image('fire1', 'images/fire1.png')
 
     // this.matter.enableWrapPlugin()
   }
@@ -68,9 +69,9 @@ export const startGame = () => {
     physics: {
       default: 'matter',
       matter: {
-        debug: {
-          showBody: true
-        },
+        // debug: {
+        //   showBody: true
+        // },
         // enableSleeping: true,
         gravity: {
           y: 0,

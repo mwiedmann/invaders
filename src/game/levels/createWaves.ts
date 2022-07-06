@@ -7,7 +7,7 @@ export const createWaves = (scene: Phaser.Scene) => {
   const spacePerEnemy = 108
   const flyInSpacePerEnemy = 118
   const rowSpace = 88
-  const level = levels[(state.level - 1) % levels.length]
+  const level = state.level <= levels.length ? levels[state.level - 1] : levels[levels.length - 1] //  levels[(state.level - 1) % levels.length] // Wrap
   let yPos = 96
   let lastRowEnemies: Enemy[] = []
 

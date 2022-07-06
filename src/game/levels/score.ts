@@ -18,6 +18,6 @@ export const updateScoreText = (score: number) => {
   scoreText.text = '0'.repeat(6 - s.length) + score.toString()
 }
 
-export const cleanupScoreText = (frameRateText: Phaser.GameObjects.Text) => {
+export const cleanupScoreText = () => {
   scoreText.destroy()
 }

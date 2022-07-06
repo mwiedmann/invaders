@@ -45,11 +45,21 @@ export class Guy extends Phaser.Physics.Matter.Sprite implements Hitable {
     })
 
     this.setOnCollide(() => {
-      // this.hit()
+      this.hit()
+    })
+
+    this.livesText = this.scene.add.text(20, gameSettings.screenHeight - 50, '', {
+      fontSize: '32px',
+      color: 'blue',
+      fontFamily: 'Verdana',
+      align: 'left',
+      fontStyle: 'bold'
     })
   }
 
-  livesRemaining = 0
+  livesText: Phaser.GameObjects.Text
+  livesRemaining = 2
+  pointsToNextFreeGuy = 10000
   startX: number
   startY: number
 
@@ -60,10 +70,13 @@ export class Guy extends Phaser.Physics.Matter.Sprite implements Hitable {
 
   destroy() {
     controls.p1Shoot.removeAllListeners()
+    this.livesText.destroy()
     super.destroy()
   }
 
   update(time: number, delta: number) {
+    this.livesText.text = this.livesRemaining >= 0 ? `Ships: ${this.livesRemaining}` : 'GAME OVER'
+
     // If the guy is dead, see if it is time for him to come back to life
     if (this.dead) {
       if (this.livesRemaining >= 0 && time >= this.comeBackTime) {
@@ -89,6 +102,16 @@ export class Guy extends Phaser.Physics.Matter.Sprite implements Hitable {
   }
 
   hit() {
+    state.fireParticleManager.createEmitter({
+      speed: 250,
+      blendMode: 'ADD',
+      lifespan: 700,
+      maxParticles: 30,
+      scale: 1,
+      x: this.x,
+      y: this.y
+    })
+
     this.livesRemaining--
     this.dead = true
     this.setVisible(false)
@@ -114,5 +137,15 @@ export class Guy extends Phaser.Physics.Matter.Sprite implements Hitable {
 
   nuke() {
     ;[...state.enemies.getChildren()].forEach((c: any) => c.hit())
+  }
+
+  scorePoints(points: number) {
+    this.pointsToNextFreeGuy -= points
+    if (this.pointsToNextFreeGuy <= 0) {
+      this.livesRemaining++
+      this.pointsToNextFreeGuy = 10000 - this.pointsToNextFreeGuy
+    }
+
+    state.score += points
   }
 }

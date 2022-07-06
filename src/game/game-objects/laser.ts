@@ -1,8 +1,7 @@
 import { CollisionCategory, EnemyLaserCollisionMask, GuyLaserCollisionMask } from '../collisions'
 import { gameSettings, settingsHelpers } from '../consts'
-import { GameScene } from '../game-init'
 import { state } from '../states'
-import { CollisionHitable, Hitable } from './hit'
+import { Hitable } from './hit'
 
 export const createLaser = (scene: Phaser.Scene, x: number, y: number, isPlayers: boolean) => {
   const laser = new Laser(
@@ -51,9 +50,8 @@ export class Laser extends Phaser.Physics.Matter.Sprite implements Hitable {
     this.setOnCollide(() => {
       this.hit()
     })
-    this.particleManager = this.scene.add.particles('particle').setDepth(998)
 
-    const emitter = this.particleManager.createEmitter({
+    this.particleEmitter = state.laserParticleManager.createEmitter({
       speed: 30,
       frame: isPlayers ? 0 : 1,
       scale: { start: 0.75, end: 0 },
@@ -61,29 +59,36 @@ export class Laser extends Phaser.Physics.Matter.Sprite implements Hitable {
       lifespan: 50
     })
 
-    emitter.startFollow(this)
-    emitter.startFollow(this)
+    this.particleEmitter.startFollow(this)
   }
 
-  particleManager: Phaser.GameObjects.Particles.ParticleEmitterManager
+  particleEmitter: Phaser.GameObjects.Particles.ParticleEmitter
 
   removeProjectile() {
     if (this.isPlayers) {
-      state.playerProjectiles.remove(this)
+      state.playerProjectiles.remove(this, true, true)
     } else {
-      state.enemyProjectiles.remove(this)
+      state.enemyProjectiles.remove(this, true, true)
     }
   }
 
   update(time: number, delta: number) {
-    if (this.y < 10 || this.y > settingsHelpers.playerYPosition) {
+    if (this.y < 10 || this.y > settingsHelpers.playerYPosition + 50) {
       this.hit()
     }
   }
 
   hit() {
-    this.particleManager.destroy()
     this.removeProjectile()
     this.destroy()
+  }
+
+  cleanup() {
+    state.laserParticleManager.removeEmitter(this.particleEmitter)
+  }
+
+  destroy(fromScene?: boolean | undefined): void {
+    this.cleanup()
+    super.destroy(fromScene)
   }
 }
