@@ -2,6 +2,7 @@ import * as Phaser from 'phaser'
 
 import { gameState, state } from '.'
 import { gameSettings, settingsHelpers } from '../consts'
+import { controls } from '../game-init'
 import { Enemy } from '../game-objects/enemy'
 import { ShowLevel } from '../game-objects/showLevel'
 import { createWaves } from '../levels/createWaves'
@@ -35,6 +36,19 @@ export const gameUpdate = (scene: Phaser.Scene, time: number, delta: number, ini
       frameRateText = createFrameRateText(scene)
     }
 
+    controls.pause.on('down', () => {
+      state.paused = !state.paused
+      if (state.paused) {
+        scene.matter.world.pause()
+      } else {
+        scene.matter.world.resume()
+      }
+    })
+
+    return
+  }
+
+  if (state.paused) {
     return
   }
 

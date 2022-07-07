@@ -13,10 +13,18 @@ export const createEnemy = (
   delay: number,
   x: number,
   y: number,
+  row: number,
+  column: number,
   level = 1,
   health = 1,
   shipType = 1
 ) => {
+  // Check if any enemies already in this location
+  ;(state.enemies.getChildren() as Enemy[]).forEach((e) => {
+    if (e.startX === x && e.startY === y) {
+      console.warn('Duplicate position', row, column)
+    }
+  })
   const enemy = new Enemy(
     scene.matter.world,
     x,

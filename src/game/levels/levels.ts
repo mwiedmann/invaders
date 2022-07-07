@@ -172,13 +172,139 @@ export const levels: Level[] = [
           { x: 7, y: 3 }
         ],
         start: { side: -1, y: settingsHelpers.fieldHeight3Quarters },
-        path: [...pathTypes.farDown, ...pathTypes.midTop],
+        path: [...pathTypes.farDown, ...pathTypes.midTop]
+      }
+    ]
+  ],
+
+  // Level 2
+  [
+    [
+      {
+        enemies: [
+          { x: 0, y: 1 },
+          { x: 1, y: 1 },
+          { x: 0, y: 2 },
+          { x: 1, y: 2 },
+          { x: 2, y: 1 },
+          { x: 2, y: 2 }
+        ],
+        start: { side: -1, y: settingsHelpers.fieldHeightTopPath },
+        path: [...pathTypes.closeDown, ...pathTypes.farTop],
         flip: true
+      }
+    ],
+    [
+      {
+        enemies: [
+          { x: 3, y: 0, type: 2, health: 2 },
+          { x: 3, y: 1 },
+          { x: 4, y: 0, type: 2, health: 2 },
+          { x: 4, y: 1 },
+          { x: 5, y: 0, type: 2, health: 2 },
+          { x: 3, y: 2 },
+          { x: 6, y: 0, type: 2, health: 2 },
+          { x: 4, y: 2 }
+        ],
+        start: { side: 1, y: settingsHelpers.fieldHeightMid },
+        path: [...flipPath(pathTypes.closeMidLoop), ...flipPath(pathTypes.farMidLoop)]
+      }
+    ],
+    [
+      {
+        enemies: [
+          { x: 6, y: 1 },
+          { x: 2, y: 0, type: 2, health: 2 },
+          { x: 5, y: 1 },
+          { x: 7, y: 0, type: 2, health: 2 },
+          { x: 6, y: 2 },
+          { x: 5, y: 2 }
+        ],
+        start: { side: -1, y: settingsHelpers.fieldHeight3Quarters },
+        path: [...pathTypes.farDown, ...pathTypes.midTop]
+      }
+    ],
+    [
+      {
+        enemies: [
+          { x: 2, y: 3 },
+          { x: 3, y: 3 },
+          { x: 4, y: 3 },
+          { x: 5, y: 3 },
+          { x: 6, y: 3 },
+          { x: 7, y: 3 }
+        ],
+        start: { side: 1, y: settingsHelpers.fieldHeight3Quarters },
+        path: [...flipPath(pathTypes.farTop)]
+      }
+    ]
+  ],
+
+  // Level 3
+  [
+    [
+      {
+        enemies: [
+          { x: 0, y: 1 },
+          { x: 1, y: 1, type: 2 },
+          { x: 0, y: 2 },
+          { x: 1, y: 2 },
+          { x: 2, y: 1, type: 2 },
+          { x: 2, y: 2 }
+        ],
+        start: { side: -1, y: settingsHelpers.fieldHeightMid },
+        path: [...pathTypes.closeTop, ...pathTypes.closeDown],
+        flip: true
+      }
+    ],
+    [
+      {
+        enemies: [
+          { x: 2, y: 0, type: 2, health: 2 },
+          { x: 3, y: 1 },
+          { x: 3, y: 0, type: 2, health: 2 },
+          { x: 4, y: 1 },
+          { x: 5, y: 0, type: 3, health: 2 },
+          { x: 3, y: 2 },
+          { x: 6, y: 0, type: 2, health: 2 },
+          { x: 4, y: 2 },
+          { x: 7, y: 0, type: 2, health: 2 }
+        ],
+        start: { side: 1, y: settingsHelpers.fieldHeightTopPath },
+        path: [...flipPath(pathTypes.midLoop), ...flipPath(pathTypes.farMid)]
+      }
+    ],
+    [
+      {
+        enemies: [
+          { x: 1, y: 0, type: 2 },
+          { x: 6, y: 1 },
+          { x: 2, y: 0, type: 2, health: 2 },
+          { x: 5, y: 1 },
+          { x: 8, y: 0, type: 2 },
+          { x: 6, y: 2 },
+          { x: 4, y: 0, type: 3, health: 2 },
+          { x: 5, y: 2 }
+        ],
+        start: { side: 1, y: settingsHelpers.fieldHeight3Quarters },
+        path: [...pathTypes.farDown, ...pathTypes.midTop]
+      }
+    ],
+    [
+      {
+        enemies: [
+          { x: 2, y: 3 },
+          { x: 3, y: 3 },
+          { x: 4, y: 3 },
+          { x: 5, y: 3 },
+          { x: 6, y: 3 },
+          { x: 7, y: 3 }
+        ],
+        start: { side: -1, y: settingsHelpers.fieldHeightMid },
+        path: [...pathTypes.farTop]
       }
     ]
   ]
-
-  // Level 2
 ]
 
 // export const levelsOld = [

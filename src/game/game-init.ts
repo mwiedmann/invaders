@@ -8,6 +8,7 @@ export let controls: {
   cursors: Phaser.Types.Input.Keyboard.CursorKeys
   p1Shoot: Phaser.Input.Keyboard.Key
   p1Special: Phaser.Input.Keyboard.Key
+  pause: Phaser.Input.Keyboard.Key
 }
 
 const updateFunctions = {
@@ -49,7 +50,8 @@ export class GameScene extends Phaser.Scene {
     controls = {
       cursors: this.input.keyboard.createCursorKeys(),
       p1Shoot: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SHIFT),
-      p1Special: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.X)
+      p1Special: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.X),
+      pause: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.P)
     }
   }
 

@@ -50,6 +50,8 @@ export const createWaves = (scene: Phaser.Scene) => {
             500,
             spacePerEnemy + spacePerEnemy * eConfig.x,
             yPos + rowSpace * eConfig.y,
+            eConfig.x,
+            eConfig.y,
             eConfig.level || 1,
             eConfig.health || 1,
             eConfig.type || 1
@@ -63,8 +65,6 @@ export const createWaves = (scene: Phaser.Scene) => {
           enemy.rotation = rotationToFirstPath
           offscreenX += offsceenXChange
 
-          // enemy.returning = true
-          console.log(startingVector)
           enemy.path = [startingVector, ...group.path]
         }
       }

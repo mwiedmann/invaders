@@ -13,6 +13,7 @@ export interface IState {
   score: number
   fireParticleManager: Phaser.GameObjects.Particles.ParticleEmitterManager
   laserParticleManager: Phaser.GameObjects.Particles.ParticleEmitterManager
+  paused: boolean
 }
 
 export let state: IState
@@ -39,12 +40,13 @@ export const constructState = (scene: Phaser.Scene) => {
     enemies: new Phaser.GameObjects.Group(scene),
     marchPosition: 0,
     marchDir: 1,
-    level: 1,
+    level: 3,
     diveMax: 0,
     laserMax: 0,
     score: 0,
     fireParticleManager: scene.add.particles('fire1').setDepth(100),
-    laserParticleManager: scene.add.particles('particle').setDepth(90)
+    laserParticleManager: scene.add.particles('particle').setDepth(90),
+    paused: false
   }
 
   scene.add.group(state.enemyProjectiles)
