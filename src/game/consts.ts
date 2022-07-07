@@ -1,6 +1,6 @@
 export const gameSettings = {
-  screenWidth: 1120,
-  screenHeight: 1440,
+  screenWidth: 1232,
+  screenHeight: 1584,
   gameCameraZoom: 1,
   playerSpeed: 0.33,
   playerEdge: 96,

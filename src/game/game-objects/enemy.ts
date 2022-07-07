@@ -6,7 +6,7 @@ import { createLaser } from './laser'
 
 const turnAmount = Math.PI / 24
 
-export const createEnemy = (scene: Phaser.Scene, delay: number, x: number, y: number) => {
+export const createEnemy = (scene: Phaser.Scene, delay: number, x: number, y: number, level = 1, health = 1) => {
   const enemy = new Enemy(
     scene.matter.world,
     x,
@@ -33,7 +33,9 @@ export const createEnemy = (scene: Phaser.Scene, delay: number, x: number, y: nu
         }
       }
     },
-    delay
+    delay,
+    level,
+    health
   )
 
   state.enemies.add(enemy, true)
@@ -51,7 +53,9 @@ export class Enemy extends Phaser.Physics.Matter.Sprite implements Hitable {
     texture: string,
     frame: string | integer,
     options: Phaser.Types.Physics.Matter.MatterBodyConfig,
-    public delay: number
+    public delay: number,
+    public level: number,
+    public health: number
   ) {
     super(world, x, y, texture, frame, options)
 
@@ -65,7 +69,10 @@ export class Enemy extends Phaser.Physics.Matter.Sprite implements Hitable {
 
     this.angle = 90
 
-    // this.newPathTime(world.scene.time.now)
+    if (health > 1) {
+      const blue = 0x2222ff
+      this.setTint(blue)
+    }
   }
 
   startX: number
@@ -235,30 +242,48 @@ export class Enemy extends Phaser.Physics.Matter.Sprite implements Hitable {
   }
 
   hit() {
-    let score = 25
-    // Biggest score if on flyIn path
-    if (this.path[0]) {
-      score = 200
-    } else if (this.moveTo) {
-      // Medium score if diving
-      score = 100
+    this.health--
+
+    if (this.health === 0) {
+      let score = 25
+      // Biggest score if on flyIn path
+      if (this.path[0]) {
+        score = 200
+      } else if (this.moveTo) {
+        // Medium score if diving
+        score = 100
+      }
+
+      state.player.scorePoints(score)
+
+      state.fireParticleManager.createEmitter({
+        speed: 150,
+        blendMode: 'ADD',
+        lifespan: 700,
+        maxParticles: 15,
+        scale: 0.7,
+        x: this.x,
+        y: this.y
+      })
+
+      state.enemies.remove(this)
+      this.dead = true
+      this.destroy()
+    } else {
+      state.fireParticleManager.createEmitter({
+        speed: 150,
+        blendMode: 'ADD',
+        lifespan: 500,
+        maxParticles: 15,
+        scale: 0.3,
+        x: this.x,
+        y: this.y
+      })
+
+      if (this.health === 1) {
+        this.clearTint()
+      }
     }
-
-    state.player.scorePoints(score)
-
-    state.fireParticleManager.createEmitter({
-      speed: 150,
-      blendMode: 'ADD',
-      lifespan: 700,
-      maxParticles: 15,
-      scale: 0.7,
-      x: this.x,
-      y: this.y
-    })
-
-    state.enemies.remove(this)
-    this.dead = true
-    this.destroy()
   }
 
   nextPathPoint() {
@@ -273,6 +298,8 @@ export class Enemy extends Phaser.Physics.Matter.Sprite implements Hitable {
 
   canShoot(time: number, shotTimeWait: number) {
     return (
+      this.x >= gameSettings.playerEdge &&
+      this.y <= gameSettings.screenWidth - gameSettings.playerEdge &&
       this.enemiesToWaitFor.length === 0 &&
       (this.path[0] || this.returning || this.moveTo) &&
       this.lastShot + shotTimeWait <= time
@@ -281,6 +308,6 @@ export class Enemy extends Phaser.Physics.Matter.Sprite implements Hitable {
 
   shoot(time: number) {
     this.lastShot = time
-    createLaser(this.scene, this.x, this.y, false)
+    // createLaser(this.scene, this.x, this.y, false)
   }
 }

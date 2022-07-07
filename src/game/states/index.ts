@@ -43,8 +43,8 @@ export const constructState = (scene: Phaser.Scene) => {
     diveMax: 0,
     laserMax: 0,
     score: 0,
-    fireParticleManager: scene.add.particles('fire1'),
-    laserParticleManager: scene.add.particles('particle')
+    fireParticleManager: scene.add.particles('fire1').setDepth(100),
+    laserParticleManager: scene.add.particles('particle').setDepth(90)
   }
 
   scene.add.group(state.enemyProjectiles)

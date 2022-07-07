@@ -1,7 +1,7 @@
 import * as Phaser from 'phaser'
 
 import { gameState, state } from '.'
-import { gameSettings } from '../consts'
+import { gameSettings, settingsHelpers } from '../consts'
 import { Enemy } from '../game-objects/enemy'
 import { ShowLevel } from '../game-objects/showLevel'
 import { createWaves } from '../levels/createWaves'
@@ -14,12 +14,23 @@ let frameRateText: Phaser.GameObjects.Text
 let subState: 'game' | 'showLevel' = 'showLevel'
 let subStateTime = 3000
 let showLevel: ShowLevel | undefined
+let background: Phaser.GameObjects.TileSprite
+let alphaDir = 1
+let nextShotTime = 0
 
 export const gameUpdate = (scene: Phaser.Scene, time: number, delta: number, init: boolean) => {
   if (init) {
     subState = 'showLevel'
     subStateTime = 3000
     createScoreText(scene)
+    background = scene.add.tileSprite(
+      settingsHelpers.fieldWidthMid,
+      settingsHelpers.fieldHeightMid,
+      gameSettings.screenWidth,
+      gameSettings.screenHeight,
+      'background'
+    )
+
     if (gameSettings.showFrameRate) {
       frameRateText = createFrameRateText(scene)
     }
@@ -32,6 +43,15 @@ export const gameUpdate = (scene: Phaser.Scene, time: number, delta: number, ini
   }
 
   updateScoreText(state.score)
+  background.tilePositionY -= delta / 4
+  background.alpha += 0.01 * alphaDir
+  if (background.alpha >= 0.8) {
+    background.alpha = 0.8
+    alphaDir *= -1
+  } else if (background.alpha <= 0.2) {
+    background.alpha = 0.2
+    alphaDir *= -1
+  }
 
   // Update the march position
   // This is so the enemies slide back-and-forth together
@@ -51,12 +71,13 @@ export const gameUpdate = (scene: Phaser.Scene, time: number, delta: number, ini
     state.enemies.getChildren().forEach((c) => c.update(time, delta, state.diveMax))
 
     // Fire a laser if below the max for this level
-    if (!state.player.dead && state.enemyProjectiles.countActive() < state.laserMax) {
+    if (!state.player.dead && time > nextShotTime && state.enemyProjectiles.countActive() < state.laserMax) {
       // Find enemies who can shoot
       const enemies = [...(state.enemies.getChildren() as Enemy[])].filter((c) => c.canShoot(time, shotTimeWait))
       if (enemies.length > 0) {
         const enemy = Phaser.Utils.Array.Shuffle([...enemies])[0] as Enemy
         enemy.shoot(time)
+        nextShotTime = time + Phaser.Math.RND.between(125, 500)
       }
     }
   }
@@ -89,6 +110,7 @@ export const gameUpdate = (scene: Phaser.Scene, time: number, delta: number, ini
     }
 
     cleanupScoreText()
+    background.destroy()
     state.playerProjectiles.destroy(true)
     state.enemyProjectiles.destroy(true)
     state.enemies.destroy(true)

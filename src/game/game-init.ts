@@ -24,17 +24,25 @@ export class GameScene extends Phaser.Scene {
 
   /** Load all the images we need and assign them names */
   preload(this: Phaser.Scene) {
-    // this.load.image('background', 'images/background.png')
+    // Title image
     this.load.image('title', 'images/title.png')
 
+    // Player
     this.load.spritesheet('guy', 'images/guy.png', { frameWidth: 98, frameHeight: 75 })
     this.load.image('guy-laser', 'images/guy-laser.png')
-    this.load.spritesheet('enemy1', 'images/enemy1.png', { frameWidth: 84, frameHeight: 104 })
+
+    // Enemies
+    this.load.spritesheet('enemy1', 'images/enemy1-84x104.png', { frameWidth: 84, frameHeight: 104 })
+    this.load.spritesheet('enemy2', 'images/enemy2-84x103.png', { frameWidth: 84, frameHeight: 103 })
+    this.load.spritesheet('enemy3', 'images/enemy3-84x97.png', { frameWidth: 84, frameHeight: 97 })
     this.load.image('enemy-laser', 'images/enemy-laser.png')
+
+    // Particles
     this.load.spritesheet('particle', 'images/particle.png', { frameWidth: 16 })
     this.load.image('fire1', 'images/fire1.png')
 
-    // this.matter.enableWrapPlugin()
+    // Backgrounds
+    this.load.image('background', 'images/background.png')
   }
 
   create(this: Phaser.Scene) {
@@ -43,8 +51,6 @@ export class GameScene extends Phaser.Scene {
       p1Shoot: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SHIFT),
       p1Special: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.X)
     }
-
-    // this.matter.world.setBounds(0, 0, settingsHelpers.worldBoundWidth, settingsHelpers.worldBoundHeight)
   }
 
   update(this: Phaser.Scene, time: number, delta: number) {
