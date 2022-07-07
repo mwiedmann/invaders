@@ -1,17 +1,27 @@
+import * as Phaser from 'phaser'
 import { CollisionCategory, EnemyCollisionMask } from '../collisions'
 import { gameSettings, settingsHelpers } from '../consts'
 import { state } from '../states'
+import { createFloatingPoints } from './floatingPoints'
 import { Hitable } from './hit'
 import { createLaser } from './laser'
 
 const turnAmount = Math.PI / 24
 
-export const createEnemy = (scene: Phaser.Scene, delay: number, x: number, y: number, level = 1, health = 1) => {
+export const createEnemy = (
+  scene: Phaser.Scene,
+  delay: number,
+  x: number,
+  y: number,
+  level = 1,
+  health = 1,
+  shipType = 1
+) => {
   const enemy = new Enemy(
     scene.matter.world,
     x,
     y,
-    `enemy1`,
+    `enemy${shipType}`,
     0,
     {
       mass: 6,
@@ -35,7 +45,8 @@ export const createEnemy = (scene: Phaser.Scene, delay: number, x: number, y: nu
     },
     delay,
     level,
-    health
+    health,
+    shipType
   )
 
   state.enemies.add(enemy, true)
@@ -55,7 +66,8 @@ export class Enemy extends Phaser.Physics.Matter.Sprite implements Hitable {
     options: Phaser.Types.Physics.Matter.MatterBodyConfig,
     public delay: number,
     public level: number,
-    public health: number
+    public health: number,
+    public shipType: number
   ) {
     super(world, x, y, texture, frame, options)
 
@@ -245,15 +257,21 @@ export class Enemy extends Phaser.Physics.Matter.Sprite implements Hitable {
     this.health--
 
     if (this.health === 0) {
-      let score = 25
-      // Biggest score if on flyIn path
+      let score = 25 * this.shipType
+      let showPoints = false
+      // Biggest score is on flyIn path
       if (this.path[0]) {
-        score = 200
+        score = 100 + 100 * this.shipType
+        showPoints = true
       } else if (this.moveTo) {
         // Medium score if diving
-        score = 100
+        score = 50 + 50 * this.shipType
+        showPoints = true
       }
 
+      if (showPoints) {
+        createFloatingPoints(this.scene, score, this.x, this.y)
+      }
       state.player.scorePoints(score)
 
       state.fireParticleManager.createEmitter({
@@ -308,6 +326,6 @@ export class Enemy extends Phaser.Physics.Matter.Sprite implements Hitable {
 
   shoot(time: number) {
     this.lastShot = time
-    // createLaser(this.scene, this.x, this.y, false)
+    createLaser(this.scene, this.x, this.y, false)
   }
 }

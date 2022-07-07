@@ -1,3 +1,4 @@
+import * as Phaser from 'phaser'
 import { CollisionCategory, EnemyLaserCollisionMask, GuyLaserCollisionMask } from '../collisions'
 import { gameSettings, settingsHelpers } from '../consts'
 import { state } from '../states'

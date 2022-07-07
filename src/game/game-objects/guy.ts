@@ -1,8 +1,9 @@
+import * as Phaser from 'phaser'
 import { CollisionCategory, GuyCollisionMask } from '../collisions'
 import { gameSettings, settingsHelpers } from '../consts'
 import { controls } from '../game-init'
 import { state } from '../states'
-import { CollisionHitable, Hitable } from './hit'
+import { Hitable } from './hit'
 import { createLaser } from './laser'
 
 export const createGuy = (scene: Phaser.Scene) => {

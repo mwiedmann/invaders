@@ -45,7 +45,15 @@ export const createWaves = (scene: Phaser.Scene) => {
 
         for (let e = 0; e < group.enemies.length; e++) {
           const eConfig = group.enemies[e]
-          const enemy = createEnemy(scene, 500, spacePerEnemy + spacePerEnemy * eConfig.x, yPos + rowSpace * eConfig.y)
+          const enemy = createEnemy(
+            scene,
+            500,
+            spacePerEnemy + spacePerEnemy * eConfig.x,
+            yPos + rowSpace * eConfig.y,
+            eConfig.level || 1,
+            eConfig.health || 1,
+            eConfig.type || 1
+          )
           enemy.enemiesToWaitFor = lastBatchEnemies
           thisBatchEnemies.push(enemy)
 
