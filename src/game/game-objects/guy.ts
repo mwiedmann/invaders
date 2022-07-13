@@ -34,13 +34,16 @@ export class Guy extends Phaser.Physics.Matter.Sprite implements Hitable {
     this.startX = x
     this.startY = y
 
+    // Allows player to shoot
     controls.p1Shoot.on('down', () => {
+      // Player can only have a certain number of lasers on the screen at once
       if (this.dead || state.playerProjectiles.countActive() >= this.projectileLimit) {
         return
       }
       createLaser(this.scene, this.x, this.y, true)
     })
 
+    // This is just for a quick way to clear a level for testing
     controls.p1Special.on('down', () => {
       this.nuke()
     })
@@ -49,6 +52,7 @@ export class Guy extends Phaser.Physics.Matter.Sprite implements Hitable {
       this.hit()
     })
 
+    // TODO: Player probably shouldn't control text on the screen, but this is fine for now.
     this.livesText = this.scene.add.text(20, gameSettings.screenHeight - 50, '', {
       fontSize: '32px',
       color: 'blue',
@@ -86,6 +90,7 @@ export class Guy extends Phaser.Physics.Matter.Sprite implements Hitable {
       return
     }
 
+    // Set the player's move direction (or 0 if not moving)
     let leftRight = 0
     if (controls.cursors.left?.isDown) {
       leftRight -= 1
@@ -93,8 +98,10 @@ export class Guy extends Phaser.Physics.Matter.Sprite implements Hitable {
       leftRight += 1
     }
 
+    // Move them according to the current framerate
     this.x += leftRight * delta * gameSettings.playerSpeed
 
+    // Make sure not moving beyond limits
     if (this.x < settingsHelpers.playerMinX) {
       this.x = settingsHelpers.playerMinX
     } else if (this.x > settingsHelpers.playerMaxX) {
@@ -103,6 +110,7 @@ export class Guy extends Phaser.Physics.Matter.Sprite implements Hitable {
   }
 
   hit() {
+    // Fire particle when hit
     state.fireParticleManager.createEmitter({
       speed: 250,
       blendMode: 'ADD',
@@ -113,6 +121,8 @@ export class Guy extends Phaser.Physics.Matter.Sprite implements Hitable {
       y: this.y
     })
 
+    // The player will be invisible for a few seconds after death.
+    // They will then come back or the game will end
     this.livesRemaining--
     this.dead = true
     this.setVisible(false)
@@ -137,10 +147,13 @@ export class Guy extends Phaser.Physics.Matter.Sprite implements Hitable {
   }
 
   nuke() {
+    // Hit all enemies on screen (this is a test only thing)
+    // Enemies that take 2 hits will need to be nuked again but this works.
     ;[...state.enemies.getChildren()].forEach((c: any) => c.hit())
   }
 
   scorePoints(points: number) {
+    // Score points and see if player got a free guy yet
     this.pointsToNextFreeGuy -= points
     if (this.pointsToNextFreeGuy <= 0) {
       this.livesRemaining++

@@ -260,7 +260,6 @@ export const levels: Level[] = [
     [
       {
         enemies: [
-          { x: 2, y: 0, type: 2, health: 2 },
           { x: 3, y: 1 },
           { x: 3, y: 0, type: 2, health: 2 },
           { x: 4, y: 1 },

@@ -87,8 +87,8 @@ export class Enemy extends Phaser.Physics.Matter.Sprite implements Hitable {
       this.hit()
     })
 
-    this.angle = 90
-
+    // Highlight the enemy in blue when they have more than 1 health
+    // Their color will return to normal when hit
     if (health > 1) {
       const blue = 0x2222ff
       this.setTint(blue)
@@ -118,6 +118,7 @@ export class Enemy extends Phaser.Physics.Matter.Sprite implements Hitable {
   enemiesToWaitFor: Enemy[] = []
 
   newPathTime(time: number) {
+    // Pick the next time this enemy can possibly dive
     this.timeNextPath = time + Phaser.Math.RND.between(this.newPathMinTime, this.newPathMaxTime)
   }
 
@@ -136,37 +137,16 @@ export class Enemy extends Phaser.Physics.Matter.Sprite implements Hitable {
     // Release the list of enemies so they can be cleaned up
     this.enemiesToWaitFor = []
 
+    // When an enemy activates, wait some time before flying in.
+    // All enemies start off screen and wait for the group before them to finish.
+    // Then, they will still wait a tad before starting their run.
     if (this.delay > 0) {
       this.delay -= delta
       return
     }
 
-    // Try to detect if wrapped from other side
-    const wrappedX =
-      (this.lastX < 0 && this.x > gameSettings.screenWidth) || (this.lastX > gameSettings.screenWidth && this.x < 0)
-    const wrappedY =
-      (this.lastY < 0 && this.x > gameSettings.screenHeight) || (this.lastY > gameSettings.screenHeight && this.y < 0)
-
-    this.lastX = this.x
-    this.lastY = this.y
-
-    // If wrapped through the bottom, just return home
-    if (wrappedY) {
-      this.moveTo = undefined
-      this.returning = true
-    }
-
-    // If moving to a spot and just wrapped left/right
-    // adjust the x spot as it may be off screen
-    if (this.moveTo) {
-      if (wrappedX && this.moveTo.x < 0) {
-        this.moveTo.x = gameSettings.screenWidth + this.moveTo.x
-      } else if (wrappedX && this.moveTo?.x > gameSettings.screenWidth) {
-        this.moveTo.x = this.moveTo.x - gameSettings.screenWidth
-      }
-    }
-
-    // See if following a path
+    // See if moving to a spot
+    // The alternative is the enemy is just marching in formation at the top
     const pos = this.returning
       ? new Phaser.Math.Vector2(this.startX + state.marchPosition, this.startY)
       : this.path[0]
@@ -189,38 +169,40 @@ export class Enemy extends Phaser.Physics.Matter.Sprite implements Hitable {
       }
 
       // Calc the velocity vector for this angle and scale it for speed
-      // Move a little faster for returning to the start pos and initial fly-in...this also affects the initial fly in
+      // Move a little faster for returning to the start pos and initial fly-in
       const moveSpeed = this.returning || !this.finishedFlyIn ? this.hiSpeed : this.speed
       const vel = Phaser.Physics.Arcade.ArcadePhysics.prototype.velocityFromRotation(this.rotation, moveSpeed)
-
-      // TODO: setVelocity doesn't seem to work if not already moving
-      // Not sure if asleep or the physics engine doesn't like setting directly
-      // Giving a nudge here fixes for now.
-      // In theory we should be applying forces, not setting velocity directly
-      // this.applyForce(vel.scale(0.01))
       this.setVelocity(vel.x, vel.y)
 
       // Once close enough to the path point, remove this path point and see if any more
+      // We will never be able to hit the exact spot as the enemy is turning and moving.
+      // Once they are close enough, point them at the next spot.
+      // TODO: We still sometimes see an enemy tightly circling trying to get close to a spot
+      // Maybe nothing to do here as the player can just shoot it and it doesn't happen often.
       if (distanceToPos <= 32) {
         this.moveTo = undefined
 
-        // If returning to home, set a new path time
+        // If following a path, look for the next point or starting returning home
         if (this.path[0]) {
           this.path.shift()
           if (!this.path[0]) {
             this.returning = true
           }
         } else if (this.returning) {
+          // Done returning home
           this.returning = false
           this.finishedFlyIn = true
           this.newPathTime(time)
         } else if (this.y >= this.diveY) {
+          // If diving and reached the end, starting returning home
           this.returning = true
         } else {
+          // Last option is just pick a next path point, enemy is diving
           this.nextPathPoint()
         }
       }
     } else {
+      // This enemy is just marching in formation at the top of the screen
       this.setVelocity(0, 0)
       this.setPosition(this.startX + state.marchPosition, this.startY)
       this.angle = 90
@@ -264,6 +246,7 @@ export class Enemy extends Phaser.Physics.Matter.Sprite implements Hitable {
   hit() {
     this.health--
 
+    // We give points based on the ship type and more if diving or flying in
     if (this.health === 0) {
       let score = 25 * this.shipType
       let showPoints = false
@@ -323,6 +306,11 @@ export class Enemy extends Phaser.Physics.Matter.Sprite implements Hitable {
   }
 
   canShoot(time: number, shotTimeWait: number) {
+    // Can only shoot if
+    // - on screen
+    // - not waiting for other enemies to finish their fly-in
+    // - not marching
+    // - haven't shot recently
     return (
       this.x >= gameSettings.playerEdge &&
       this.y <= gameSettings.screenWidth - gameSettings.playerEdge &&

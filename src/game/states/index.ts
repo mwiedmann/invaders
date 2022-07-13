@@ -40,7 +40,7 @@ export const constructState = (scene: Phaser.Scene) => {
     enemies: new Phaser.GameObjects.Group(scene),
     marchPosition: 0,
     marchDir: 1,
-    level: 3,
+    level: 1,
     diveMax: 0,
     laserMax: 0,
     score: 0,

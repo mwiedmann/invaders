@@ -19,43 +19,58 @@ let background: Phaser.GameObjects.TileSprite
 let alphaDir = 1
 let nextShotTime = 0
 
-export const gameUpdate = (scene: Phaser.Scene, time: number, delta: number, init: boolean) => {
-  if (init) {
-    subState = 'showLevel'
-    subStateTime = 3000
-    createScoreText(scene)
-    background = scene.add.tileSprite(
-      settingsHelpers.fieldWidthMid,
-      settingsHelpers.fieldHeightMid,
-      gameSettings.screenWidth,
-      gameSettings.screenHeight,
-      'background'
-    )
+// This runs once when transitioning to this game state
+const gameInit = (scene: Phaser.Scene) => {
+  // Switch tot he showLevel sub-state for 3 secs to show the level
+  subState = 'showLevel'
+  subStateTime = 3000
+  createScoreText(scene)
 
-    if (gameSettings.showFrameRate) {
-      frameRateText = createFrameRateText(scene)
+  // Create the background tiles
+  background = scene.add.tileSprite(
+    settingsHelpers.fieldWidthMid,
+    settingsHelpers.fieldHeightMid,
+    gameSettings.screenWidth,
+    gameSettings.screenHeight,
+    'background'
+  )
+
+  // We can show an optional framerate
+  if (gameSettings.showFrameRate) {
+    frameRateText = createFrameRateText(scene)
+  }
+
+  // Setup the pause button
+  controls.pause.on('down', () => {
+    state.paused = !state.paused
+    if (state.paused) {
+      scene.matter.world.pause()
+    } else {
+      scene.matter.world.resume()
     }
+  })
+}
 
-    controls.pause.on('down', () => {
-      state.paused = !state.paused
-      if (state.paused) {
-        scene.matter.world.pause()
-      } else {
-        scene.matter.world.resume()
-      }
-    })
-
+// This runs once per game loop (hopefully 60 times a sec)
+export const gameUpdate = (scene: Phaser.Scene, time: number, delta: number, init: boolean) => {
+  // Run gameInit once
+  if (init) {
+    gameInit(scene)
     return
   }
 
+  // If we are paused, exit early
   if (state.paused) {
     return
   }
 
+  // Optional framerate text on screen
   if (frameRateText) {
     updateFrameRateText(frameRateText, delta)
   }
 
+  // Some housekeeping each loop
+  // Update the score and scroll the background
   updateScoreText(state.score)
   background.tilePositionY -= delta / 4
   background.alpha += 0.01 * alphaDir
@@ -77,9 +92,11 @@ export const gameUpdate = (scene: Phaser.Scene, time: number, delta: number, ini
     state.marchDir *= -1
   }
 
+  // Update the player and any of their projectiles
   state.player.update(time, delta)
   state.playerProjectiles.getChildren().forEach((c) => c.update(time, delta))
 
+  // If we are in the game sub-state, update the enemies
   if (subState === 'game') {
     state.enemyProjectiles.getChildren().forEach((c) => c.update(time, delta))
     state.enemies.getChildren().forEach((c) => c.update(time, delta, state.diveMax))
