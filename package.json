@@ -6,8 +6,8 @@
   "homepage": "https://github.com/mwiedmann/wizard",
   "main": "src/main.ts",
   "dependencies": {
-    "phaser": "^3.55.2",
-    "matter-wrap": "^0.2.0"
+    "matter-wrap": "^0.2.0",
+    "phaser": "^3.55.2"
   },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "5.30.0",
