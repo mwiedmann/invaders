@@ -15,19 +15,23 @@ export const createEnemy = (
   y: number,
   row: number,
   column: number,
-  addToGame = true,
-  level = 1,
-  health = 1,
-  shipType = 1
+  options: {
+    level?: number
+    health?: number
+    shipType?: number
+  } = {}
 ) => {
-  // Check if any enemies already in this location
-  if (addToGame) {
-    ;(state.enemies.getChildren() as Enemy[]).forEach((e) => {
-      if (e.startX === x && e.startY === y) {
-        console.warn('Duplicate position', row, column)
-      }
-    })
+  const { level, health, shipType } = {
+    ...{ level: 1, health: 1, shipType: 1 },
+    ...options
   }
+  // Check if any enemies already in this location
+  ;(state.enemies.getChildren() as Enemy[]).forEach((e) => {
+    if (e.startX === x && e.startY === y) {
+      console.warn('Duplicate position', row, column)
+    }
+  })
+
   const enemy = new Enemy(
     scene.matter.world,
     x,
@@ -60,9 +64,7 @@ export const createEnemy = (
     shipType
   )
 
-  if (addToGame) {
-    state.enemies.add(enemy, true)
-  }
+  state.enemies.add(enemy, true)
 
   return enemy
 }

@@ -52,10 +52,11 @@ export const createWaves = (scene: Phaser.Scene) => {
             yPos + rowSpace * eConfig.y,
             eConfig.x,
             eConfig.y,
-            true,
-            eConfig.level || 1,
-            eConfig.health || 1,
-            eConfig.type || 1
+            {
+              level: eConfig.level || 1,
+              health: eConfig.health || 1,
+              shipType: eConfig.type || 1
+            }
           )
           enemy.enemiesToWaitFor = lastBatchEnemies
           thisBatchEnemies.push(enemy)

@@ -141,6 +141,10 @@ export const gameUpdate = (scene: Phaser.Scene, time: number, delta: number, ini
     }
 
     cleanupScoreText()
+    if (showLevel) {
+      showLevel.destroy()
+      showLevel = undefined
+    }
     background.destroy()
     state.playerProjectiles.destroy(true)
     state.enemyProjectiles.destroy(true)

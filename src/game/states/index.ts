@@ -29,6 +29,10 @@ export const gameState: IGameState = {
 }
 
 export const constructState = (scene: Phaser.Scene) => {
+  if (state) {
+    cleanupState(scene)
+  }
+
   const player = createGuy(scene)
 
   state = {
@@ -42,7 +46,7 @@ export const constructState = (scene: Phaser.Scene) => {
     marchDir: 1,
     level: 1,
     diveMax: 0,
-    laserMax: 0,
+    laserMax: 2,
     score: 0,
     fireParticleManager: scene.add.particles('fire1').setDepth(100),
     laserParticleManager: scene.add.particles('particle').setDepth(90),
@@ -52,4 +56,15 @@ export const constructState = (scene: Phaser.Scene) => {
   scene.add.group(state.enemyProjectiles)
   scene.add.group(state.playerProjectiles)
   scene.add.group(state.enemies)
+}
+
+const cleanupState = (scene: Phaser.Scene) => {
+  if (state) {
+    state.player.destroy()
+    state.fireParticleManager.destroy()
+    state.laserParticleManager.destroy()
+    state.enemyProjectiles.destroy(true)
+    state.playerProjectiles.destroy(true)
+    state.enemies.destroy(true)
+  }
 }

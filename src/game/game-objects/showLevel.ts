@@ -13,7 +13,7 @@ export class ShowLevel {
     } as any)
 
     this.text.setOrigin(0.5, 0.5)
-    this.text.text = `LEVEL: ${state.level}`
+    this.text.text = `LEVEL ${state.level}`
   }
 
   text: Phaser.GameObjects.Text
