@@ -52,6 +52,7 @@ export const createWaves = (scene: Phaser.Scene) => {
             yPos + rowSpace * eConfig.y,
             eConfig.x,
             eConfig.y,
+            true,
             eConfig.level || 1,
             eConfig.health || 1,
             eConfig.type || 1

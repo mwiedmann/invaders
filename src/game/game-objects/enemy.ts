@@ -15,16 +15,19 @@ export const createEnemy = (
   y: number,
   row: number,
   column: number,
+  addToGame = true,
   level = 1,
   health = 1,
   shipType = 1
 ) => {
   // Check if any enemies already in this location
-  ;(state.enemies.getChildren() as Enemy[]).forEach((e) => {
-    if (e.startX === x && e.startY === y) {
-      console.warn('Duplicate position', row, column)
-    }
-  })
+  if (addToGame) {
+    ;(state.enemies.getChildren() as Enemy[]).forEach((e) => {
+      if (e.startX === x && e.startY === y) {
+        console.warn('Duplicate position', row, column)
+      }
+    })
+  }
   const enemy = new Enemy(
     scene.matter.world,
     x,
@@ -57,7 +60,9 @@ export const createEnemy = (
     shipType
   )
 
-  state.enemies.add(enemy, true)
+  if (addToGame) {
+    state.enemies.add(enemy, true)
+  }
 
   return enemy
 }
@@ -97,7 +102,6 @@ export class Enemy extends Phaser.Physics.Matter.Sprite implements Hitable {
 
   startX: number
   startY: number
-  lastX = 0
   lastY = 0
   lastShot = 0
 
@@ -143,6 +147,17 @@ export class Enemy extends Phaser.Physics.Matter.Sprite implements Hitable {
     if (this.delay > 0) {
       this.delay -= delta
       return
+    }
+
+    // Check if wrapped through bottom of screen to top
+    const wrappedY =
+      (this.lastY < 0 && this.x > gameSettings.screenHeight) || (this.lastY > gameSettings.screenHeight && this.y < 0)
+    this.lastY = this.y
+
+    // If wrapped through the bottom, just return home
+    if (wrappedY) {
+      this.moveTo = undefined
+      this.returning = true
     }
 
     // See if moving to a spot

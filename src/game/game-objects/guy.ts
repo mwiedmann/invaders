@@ -56,9 +56,8 @@ export class Guy extends Phaser.Physics.Matter.Sprite implements Hitable {
     this.livesText = this.scene.add.text(20, gameSettings.screenHeight - 50, '', {
       fontSize: '32px',
       color: 'blue',
-      fontFamily: 'Verdana',
-      align: 'left',
-      fontStyle: 'bold'
+      fontFamily: 'AstroSpace',
+      align: 'left'
     })
   }
 

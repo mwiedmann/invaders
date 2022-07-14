@@ -7,9 +7,8 @@ export const createScoreText = (scene: Phaser.Scene) => {
   scoreText = scene.add.text(gameSettings.screenWidth - 280, 5, '', {
     fontSize: '60px',
     color: 'blue',
-    fontFamily: 'Verdana',
-    align: 'left',
-    fontStyle: 'bold'
+    fontFamily: 'AstroSpace',
+    align: 'left'
   })
 }
 

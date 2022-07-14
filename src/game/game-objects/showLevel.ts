@@ -7,10 +7,9 @@ export class ShowLevel {
     this.text = scene.add.text(settingsHelpers.fieldWidthMid, settingsHelpers.fieldHeightMid, '', {
       fontSize: '80px',
       color: 'yellow',
-      fontFamily: 'Verdana',
+      fontFamily: 'AstroSpace',
       boundsAlignH: 'center',
-      boundsAlignV: 'middle',
-      fontStyle: 'bold'
+      boundsAlignV: 'middle'
     } as any)
 
     this.text.setOrigin(0.5, 0.5)

@@ -4,10 +4,9 @@ export const createFloatingPoints = (scene: Phaser.Scene, points: number, x: num
   const scoreText = scene.add.text(x, y, '', {
     fontSize: '28px',
     color: 'yellow',
-    fontFamily: 'Verdana',
+    fontFamily: 'AstroSpace',
     boundsAlignH: 'center',
-    boundsAlignV: 'middle',
-    fontStyle: 'bold'
+    boundsAlignV: 'middle'
   } as any)
 
   scoreText.setOrigin(0.5, 0.5)

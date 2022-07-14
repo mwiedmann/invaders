@@ -7,9 +7,8 @@ export const createFrameRateText = (scene: Phaser.Scene) => {
   return scene.add.text(50, 50, '', {
     fontSize: '60px',
     color: 'green',
-    fontFamily: 'Verdana',
-    align: 'center',
-    fontStyle: 'bold'
+    fontFamily: 'AstroSpace',
+    align: 'center'
   })
 }
 
