@@ -12,6 +12,9 @@ export const titleUpdate = (scene: Phaser.Scene, time: number, delta: number, in
     titleScreen = scene.add.image(settingsHelpers.fieldWidthMid, settingsHelpers.fieldHeightMid, 'title').setDepth(100)
     constructState(scene)
 
+    // Don't show the number of lives on the title screen
+    state.player.livesImages.visible = false
+
     // Contructing the state creates the player
     // Just move him off the screen...easiest for now
     state.player.x = -1000

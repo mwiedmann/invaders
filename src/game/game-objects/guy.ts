@@ -52,16 +52,13 @@ export class Guy extends Phaser.Physics.Matter.Sprite implements Hitable {
       this.hit()
     })
 
-    // TODO: Player probably shouldn't control text on the screen, but this is fine for now.
-    this.livesText = this.scene.add.text(20, gameSettings.screenHeight - 50, '', {
-      fontSize: '32px',
-      color: 'blue',
-      fontFamily: 'AstroSpace',
-      align: 'left'
-    })
+    // Repeat the ship image to show the number of extra lives
+    this.livesImages = this.scene.add.tileSprite(5, gameSettings.screenHeight - 80, 98, 75, 'guy')
+    this.livesImages.setOrigin(0, 0)
+    this.livesImages.scale = 0.5
   }
 
-  livesText: Phaser.GameObjects.Text
+  livesImages: Phaser.GameObjects.TileSprite
   livesRemaining = 2
   pointsToNextFreeGuy = 10000
   startX: number
@@ -74,12 +71,12 @@ export class Guy extends Phaser.Physics.Matter.Sprite implements Hitable {
 
   destroy() {
     controls.p1Shoot.removeAllListeners()
-    this.livesText.destroy()
+    this.livesImages.destroy()
     super.destroy()
   }
 
   update(time: number, delta: number) {
-    this.livesText.text = this.livesRemaining >= 0 ? `Ships: ${this.livesRemaining}` : 'GAME OVER'
+    this.livesImages.width = 98 * this.livesRemaining
 
     // If the guy is dead, see if it is time for him to come back to life
     if (this.dead) {

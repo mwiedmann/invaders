@@ -100,7 +100,6 @@ const pathTypes = {
 
 type EnemyDef = {
   type?: 1 | 2 | 3
-  level?: number
   health?: number
   x: number
   y: number

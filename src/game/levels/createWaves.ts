@@ -53,7 +53,6 @@ export const createWaves = (scene: Phaser.Scene) => {
             eConfig.x,
             eConfig.y,
             {
-              level: eConfig.level || 1,
               health: eConfig.health || 1,
               shipType: eConfig.type || 1
             }

@@ -16,13 +16,12 @@ export const createEnemy = (
   row: number,
   column: number,
   options: {
-    level?: number
     health?: number
     shipType?: number
   } = {}
 ) => {
-  const { level, health, shipType } = {
-    ...{ level: 1, health: 1, shipType: 1 },
+  const { health, shipType } = {
+    ...{ health: 1, shipType: 1 },
     ...options
   }
   // Check if any enemies already in this location
@@ -59,7 +58,6 @@ export const createEnemy = (
       }
     },
     delay,
-    level,
     health,
     shipType
   )
@@ -80,7 +78,6 @@ export class Enemy extends Phaser.Physics.Matter.Sprite implements Hitable {
     frame: string | integer,
     options: Phaser.Types.Physics.Matter.MatterBodyConfig,
     public delay: number,
-    public level: number,
     public health: number,
     public shipType: number
   ) {
@@ -89,6 +86,11 @@ export class Enemy extends Phaser.Physics.Matter.Sprite implements Hitable {
     this.startX = x
     this.startY = y
     this.name = `Enemy-${enemyNum++}`
+    this.startingHealth = health
+
+    // Each type is a little faster when diving
+    // highSpeed is the same for all so formations don't get messed up
+    this.speed = 7 + this.shipType
 
     this.setOnCollide(() => {
       this.hit()
@@ -106,9 +108,10 @@ export class Enemy extends Phaser.Physics.Matter.Sprite implements Hitable {
   startY: number
   lastY = 0
   lastShot = 0
+  startingHealth: number
 
-  speed = 8
-  hiSpeed = 14
+  speed: number
+  highSpeed = 14
 
   newPathMinTime = 2000
   newPathMaxTime = 8000
@@ -187,7 +190,7 @@ export class Enemy extends Phaser.Physics.Matter.Sprite implements Hitable {
 
       // Calc the velocity vector for this angle and scale it for speed
       // Move a little faster for returning to the start pos and initial fly-in
-      const moveSpeed = this.returning || !this.finishedFlyIn ? this.hiSpeed : this.speed
+      const moveSpeed = this.returning || !this.finishedFlyIn ? this.highSpeed : this.speed
       const vel = Phaser.Physics.Arcade.ArcadePhysics.prototype.velocityFromRotation(this.rotation, moveSpeed)
       this.setVelocity(vel.x, vel.y)
 
@@ -265,15 +268,16 @@ export class Enemy extends Phaser.Physics.Matter.Sprite implements Hitable {
 
     // We give points based on the ship type and more if diving or flying in
     if (this.health === 0) {
-      let score = 25 * this.shipType
+      // This ship is just sitting in marching order...lowest points
+      let score = 25 * this.shipType + 50 * (this.startingHealth - 1)
       let showPoints = false
-      // Biggest score is on flyIn path
-      if (this.path[0]) {
-        score = 100 + 100 * this.shipType
-        showPoints = true
-      } else if (this.moveTo) {
+      if (this.moveTo) {
         // Medium score if diving
-        score = 50 + 50 * this.shipType
+        score = 50 + 50 * this.shipType + 100 * (this.startingHealth - 1)
+        showPoints = true
+      } else if (this.path[0]) {
+        // Biggest score if on flyIn path
+        score = 100 + 100 * this.shipType + 200 * (this.startingHealth - 1)
         showPoints = true
       }
 
