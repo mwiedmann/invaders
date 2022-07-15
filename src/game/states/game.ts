@@ -15,8 +15,7 @@ let frameRateText: Phaser.GameObjects.Text
 let subState: 'game' | 'showLevel' = 'showLevel'
 let subStateTime = 3000
 let showLevel: ShowLevel | undefined
-let background: Phaser.GameObjects.TileSprite
-let alphaDir = 1
+let backgrounds: { dir: number; cycleRate: number; moveRate: number; bg: Phaser.GameObjects.TileSprite }[]
 let nextShotTime = 0
 
 // This runs once when transitioning to this game state
@@ -26,14 +25,51 @@ const gameInit = (scene: Phaser.Scene) => {
   subStateTime = 3000
   createScoreText(scene)
 
+  // Create some different colored tilesprites for the scrolling background
+  // We fade them in/out
+  const whiteBg = scene.add
+    .tileSprite(
+      settingsHelpers.fieldWidthMid,
+      settingsHelpers.fieldHeightMid,
+      gameSettings.screenWidth,
+      gameSettings.screenHeight,
+      'background'
+    )
+    .setAlpha(0.1)
+
+  const redBg = scene.add
+    .tileSprite(
+      settingsHelpers.fieldWidthMid + 64,
+      settingsHelpers.fieldHeightMid + 96,
+      gameSettings.screenWidth,
+      gameSettings.screenHeight,
+      'background'
+    )
+    .setTint(0xff4444)
+    .setAlpha(0.5)
+
+  const greenBg = scene.add
+    .tileSprite(
+      settingsHelpers.fieldWidthMid + 128,
+      settingsHelpers.fieldHeightMid - 96,
+      gameSettings.screenWidth,
+      gameSettings.screenHeight,
+      'background'
+    )
+    .setTint(0x44ff44)
+    .setAlpha(0.9)
+
   // Create the background tiles
-  background = scene.add.tileSprite(
-    settingsHelpers.fieldWidthMid,
-    settingsHelpers.fieldHeightMid,
-    gameSettings.screenWidth,
-    gameSettings.screenHeight,
-    'background'
-  )
+  backgrounds = [
+    {
+      dir: 1,
+      cycleRate: 0.01,
+      moveRate: 4,
+      bg: whiteBg
+    },
+    { dir: 1, cycleRate: 0.013, moveRate: 4.5, bg: redBg },
+    { dir: -1, cycleRate: 0.008, moveRate: 3.5, bg: greenBg }
+  ]
 
   // We can show an optional framerate
   if (gameSettings.showFrameRate) {
@@ -72,15 +108,18 @@ export const gameUpdate = (scene: Phaser.Scene, time: number, delta: number, ini
   // Some housekeeping each loop
   // Update the score and scroll the background
   updateScoreText(state.score)
-  background.tilePositionY -= delta / 4
-  background.alpha += 0.01 * alphaDir
-  if (background.alpha >= 0.8) {
-    background.alpha = 0.8
-    alphaDir *= -1
-  } else if (background.alpha <= 0.2) {
-    background.alpha = 0.2
-    alphaDir *= -1
-  }
+
+  backgrounds.forEach((b) => {
+    b.bg.tilePositionY -= delta / b.moveRate
+    b.bg.alpha += b.cycleRate * b.dir
+    if (b.bg.alpha >= 0.9) {
+      b.bg.alpha = 0.9
+      b.dir *= -1
+    } else if (b.bg.alpha <= 0.1) {
+      b.bg.alpha = 0.1
+      b.dir *= -1
+    }
+  })
 
   // Update the march position
   // This is so the enemies slide back-and-forth together
@@ -145,7 +184,11 @@ export const gameUpdate = (scene: Phaser.Scene, time: number, delta: number, ini
       showLevel.destroy()
       showLevel = undefined
     }
-    background.destroy()
+
+    backgrounds.forEach((b) => {
+      b.bg.destroy()
+    })
+    backgrounds = []
     state.playerProjectiles.destroy(true)
     state.enemyProjectiles.destroy(true)
     state.enemies.destroy(true)

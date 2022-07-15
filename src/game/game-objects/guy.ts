@@ -13,7 +13,7 @@ export const createGuy = (scene: Phaser.Scene) => {
       mask: GuyCollisionMask,
       category: CollisionCategory.Guy
     }
-  })
+  }).setDepth(10)
 
   scene.add.existing(guy)
 
