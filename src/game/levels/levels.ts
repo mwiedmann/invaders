@@ -135,8 +135,9 @@ const paths = [
 type EnemyDef = {
   x: number
   y: number
-  health?: number
-  shipType?: number
+  shipUpgrades?: number[]
+  shieldLevel?: number
+  isUFO?: boolean
 }
 
 type GroupConfig = {
@@ -158,7 +159,7 @@ export const makeLevel = (level: number): Level => {
   const enemies = level % 5 === 0 ? bossLevel : standardLevels
   const waves = enemies.map((e, idx) => {
     // "flip" paths will be on both sides so just set the side to -1
-    let side = e.flip ? -1 : (level + idx) % 2 === 1 ? 1 : -1
+    const side = e.flip ? -1 : (level + idx) % 2 === 1 ? 1 : -1
     const eCopy: Group = JSON.parse(JSON.stringify(e)) as Group
 
     // The paths are designed for the left side (-1), flip the vectors if starting from the right
@@ -181,34 +182,34 @@ const standardLevels: Group[] = [
     enemies: [
       { x: 0, y: 1 },
       { x: 1, y: 1 },
-      { x: 0, y: 2 },
+      { x: 0, y: 2, shipUpgrades: [4, 9], shieldLevel: 7 },
       { x: 1, y: 2 },
-      { x: 2, y: 1 },
+      { x: 2, y: 1, shipUpgrades: [3, 8], shieldLevel: 4 },
       { x: 2, y: 2 }
     ],
     flip: true
   },
   {
     enemies: [
-      { x: 3, y: 1 },
-      { x: 3, y: 0 },
-      { x: 4, y: 1 },
-      { x: 5, y: 0 },
+      { x: 3, y: 1, shipUpgrades: [2, 7], shieldLevel: 8 },
+      { x: 3, y: 0, shipUpgrades: [1, 6], shieldLevel: 1 },
+      { x: 4, y: 1, shipUpgrades: [1, 6], shieldLevel: 2 },
+      { x: 5, y: 0, shipUpgrades: [1, 3], shieldLevel: 1 },
       { x: 3, y: 2 },
-      { x: 6, y: 0 },
+      { x: 6, y: 0, shipUpgrades: [1, 6], shieldLevel: 1 },
       { x: 4, y: 2 },
-      { x: 7, y: 0 }
+      { x: 7, y: 0, shipUpgrades: [3, 8], shieldLevel: 6 }
     ]
   },
   {
     enemies: [
       { x: 1, y: 0 },
-      { x: 6, y: 1 },
+      { x: 6, y: 1, shipUpgrades: [2, 7], shieldLevel: 3 },
       { x: 2, y: 0 },
-      { x: 5, y: 1 },
+      { x: 5, y: 1, shipUpgrades: [1, 6], shieldLevel: 2 },
       { x: 8, y: 0 },
       { x: 6, y: 2 },
-      { x: 4, y: 0 },
+      { x: 4, y: 0, shipUpgrades: [1, 3], shieldLevel: 1 },
       { x: 5, y: 2 }
     ]
   },
@@ -241,12 +242,12 @@ const bossLevel: Group[] = [
     enemies: [
       { x: 0, y: 2 },
       { x: 1, y: 2 },
-      { x: 2, y: 2 },
-      { x: 3, y: 2 },
-      { x: 4, y: 2 },
-      { x: 5, y: 2 },
-      { x: 6, y: 2 },
-      { x: 7, y: 2 },
+      { x: 2, y: 2, shipUpgrades: [15, 20], shieldLevel: 20 },
+      { x: 3, y: 2, shipUpgrades: [10, 15], shieldLevel: 15 },
+      { x: 4, y: 2, shipUpgrades: [5, 10], shieldLevel: 5 },
+      { x: 5, y: 2, shipUpgrades: [5, 10], shieldLevel: 5 },
+      { x: 6, y: 2, shipUpgrades: [10, 15], shieldLevel: 10 },
+      { x: 7, y: 2, shipUpgrades: [15, 20], shieldLevel: 20 },
       { x: 8, y: 2 },
       { x: 9, y: 2 }
     ]
@@ -254,30 +255,30 @@ const bossLevel: Group[] = [
   {
     enemies: [
       { x: 0, y: 1 },
-      { x: 1, y: 1 },
-      { x: 2, y: 1 },
-      { x: 3, y: 1 },
+      { x: 1, y: 1, shipUpgrades: [15, 20], shieldLevel: 20 },
+      { x: 2, y: 1, shipUpgrades: [5, 10], shieldLevel: 5 },
+      { x: 3, y: 1, shipUpgrades: [5, 10], shieldLevel: 5 },
       // Gap for UFO
-      { x: 6, y: 1 },
-      { x: 7, y: 1 },
-      { x: 8, y: 1 },
+      { x: 6, y: 1, shipUpgrades: [5, 10], shieldLevel: 5 },
+      { x: 7, y: 1, shipUpgrades: [5, 10], shieldLevel: 5 },
+      { x: 8, y: 1, shipUpgrades: [15, 20], shieldLevel: 15 },
       { x: 9, y: 1 }
     ]
   },
   {
     enemies: [
       { x: 0, y: 0 },
-      { x: 1, y: 0 },
-      { x: 2, y: 0 },
-      { x: 3, y: 0 },
+      { x: 1, y: 0, shipUpgrades: [15, 20], shieldLevel: 20 },
+      { x: 2, y: 0, shipUpgrades: [10, 15], shieldLevel: 10 },
+      { x: 3, y: 0, shipUpgrades: [5, 10], shieldLevel: 5 },
       // Gap for UFO
-      { x: 6, y: 0 },
-      { x: 7, y: 0 },
-      { x: 8, y: 0 },
+      { x: 6, y: 0, shipUpgrades: [5, 10], shieldLevel: 5 },
+      { x: 7, y: 0, shipUpgrades: [10, 15], shieldLevel: 15 },
+      { x: 8, y: 0, shipUpgrades: [15, 20], shieldLevel: 15 },
       { x: 9, y: 0 }
     ]
   },
   {
-    enemies: [{ x: 4.5, y: 0.5, shipType: 9, health: 10 }]
+    enemies: [{ x: 4.5, y: 0.5, isUFO: true }]
   }
 ]

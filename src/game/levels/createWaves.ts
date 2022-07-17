@@ -43,6 +43,10 @@ export const createWaves = (scene: Phaser.Scene) => {
 
       for (let e = 0; e < group.enemies.length; e++) {
         const eConfig = group.enemies[e]
+
+        // shipUpgrades gives a ship upgrade at each level in this list. Count how many.
+        const shipUpgrades = eConfig.shipUpgrades ? eConfig.shipUpgrades.filter((s) => state.level >= s).length : 0
+
         const enemy = createEnemy(
           scene,
           500,
@@ -51,8 +55,17 @@ export const createWaves = (scene: Phaser.Scene) => {
           eConfig.x,
           eConfig.y,
           {
-            health: eConfig.health || 1,
-            shipType: eConfig.shipType || 1
+            health: eConfig.shieldLevel
+              ? // If we've hit this enemies shield level, give them a shield (2 health) else just 1
+                state.level >= eConfig.shieldLevel
+                ? 2
+                : 1
+              : // If a UFO, it gets 10...all others default to 1
+              eConfig.isUFO
+              ? 10
+              : 1,
+
+            shipType: eConfig.isUFO ? 9 : 1 + shipUpgrades
           }
         )
         enemy.enemiesToWaitFor = lastBatchEnemies
@@ -61,7 +74,7 @@ export const createWaves = (scene: Phaser.Scene) => {
         // Start enemy off screen
         // They will fly in like galaga
         // Boss enemies needs a little more room (shipType: 9)
-        enemy.setPosition(eConfig.shipType === 9 ? offscreenX * 2 : offscreenX, group.start.y)
+        enemy.setPosition(eConfig.isUFO ? offscreenX * 2 : offscreenX, group.start.y)
         enemy.rotation = rotationToFirstPath
         offscreenX += offsceenXChange
 
