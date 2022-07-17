@@ -20,6 +20,7 @@ export const flipPath = (paths: Phaser.Math.Vector2[]) =>
   paths.map((p) => new Phaser.Math.Vector2(gameSettings.screenWidth - p.x, p.y))
 
 const pathTypes = {
+  terminate: [new Phaser.Math.Vector2(settingsHelpers.fieldWidthMid, -100)],
   closeDown: [new Phaser.Math.Vector2(settingsHelpers.fieldWidth1Quarter, settingsHelpers.fieldHeight3Quarters)],
   closeMid: [new Phaser.Math.Vector2(settingsHelpers.fieldWidth1Quarter, settingsHelpers.fieldHeightMid)],
   closeTop: [new Phaser.Math.Vector2(settingsHelpers.fieldWidth1Quarter, settingsHelpers.fieldHeightTopPath)],
@@ -112,10 +113,10 @@ const paths = [
     [...pathTypes.closeTop, ...pathTypes.farMid]
   ],
   [
-    [...pathTypes.closeDown, ...pathTypes.closeMidLoop],
-    [...pathTypes.farMid, ...pathTypes.closeTop],
-    [...pathTypes.midDown, ...pathTypes.midTop],
-    [...pathTypes.farTop, ...pathTypes.mid]
+    [...pathTypes.closeDown, ...pathTypes.closeMidLoop, ...pathTypes.terminate],
+    [...pathTypes.farMid, ...pathTypes.closeTop, ...pathTypes.terminate],
+    [...pathTypes.midDown, ...pathTypes.midTop, ...pathTypes.terminate],
+    [...pathTypes.farTop, ...pathTypes.mid, ...pathTypes.terminate]
   ],
   [
     [...pathTypes.closeMid, ...pathTypes.farTop],
@@ -148,6 +149,7 @@ type GroupConfig = {
 type Group = {
   enemies: EnemyDef[]
   flip?: boolean
+  terminate?: boolean
 }
 
 type Wave = Group & GroupConfig
@@ -168,7 +170,8 @@ export const makeLevel = (level: number): Level => {
     return {
       ...eCopy,
       start: { side, y: settingsHelpers.fieldHeightMid },
-      path
+      path,
+      terminate: level % 5 === 3
     } as Wave
   })
 

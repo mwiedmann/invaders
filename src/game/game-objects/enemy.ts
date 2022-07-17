@@ -18,10 +18,11 @@ export const createEnemy = (
   options: {
     health?: number
     shipType?: number
+    terminate?: boolean
   } = {}
 ) => {
-  const { health, shipType } = {
-    ...{ health: 1, shipType: 1 },
+  const { health, shipType, terminate } = {
+    ...{ health: 1, shipType: 1, terminate: false },
     ...options
   }
   // Check if any enemies already in this location
@@ -59,7 +60,8 @@ export const createEnemy = (
     },
     delay,
     health,
-    shipType
+    shipType,
+    terminate
   )
 
   state.enemies.add(enemy, true)
@@ -79,7 +81,8 @@ export class Enemy extends Phaser.Physics.Matter.Sprite implements Hitable {
     options: Phaser.Types.Physics.Matter.MatterBodyConfig,
     public delay: number,
     public health: number,
-    public shipType: number
+    public shipType: number,
+    public terminate: boolean
   ) {
     super(world, x, y, texture, frame, options)
 
@@ -266,6 +269,13 @@ export class Enemy extends Phaser.Physics.Matter.Sprite implements Hitable {
     if (this.y > gameSettings.screenHeight + 32) {
       this.y = -32
     }
+
+    // Terminate means to clear this enemy when it flies off the top of screen
+    if (this.y < 0 && this.terminate) {
+      state.enemies.remove(this)
+      this.dead = true
+      this.destroy()
+    }
   }
 
   hit() {
@@ -333,11 +343,13 @@ export class Enemy extends Phaser.Physics.Matter.Sprite implements Hitable {
 
   canShoot(time: number, shotTimeWait: number) {
     // Can only shoot if
+    // - not terminating after fly-in
     // - on screen
     // - not waiting for other enemies to finish their fly-in
     // - not marching
     // - haven't shot recently
     return (
+      !this.terminate &&
       this.x >= gameSettings.playerEdge &&
       this.y <= gameSettings.screenWidth - gameSettings.playerEdge &&
       this.enemiesToWaitFor.length === 0 &&

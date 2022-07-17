@@ -11,9 +11,10 @@ export const createWaves = (scene: Phaser.Scene) => {
   let yPos = 96
   let lastBatchEnemies: Enemy[] = []
 
-  state.diveMax = Math.min(1 + state.level, gameSettings.maxDivers)
-  state.laserMax = Math.min(1 + state.level, gameSettings.maxLasers)
+  state.diveMax = Math.min(Math.ceil(1 + state.level / 2), gameSettings.maxDivers)
+  state.laserMax = Math.min(Math.ceil(1 + state.level / 2), gameSettings.maxLasers)
 
+  console.log(`Level ${state.level}, diveMax: ${state.diveMax}, laserMax: ${state.laserMax}`)
   for (let w = 0; w < level.length; w++) {
     let group = level[w]
 
@@ -65,7 +66,8 @@ export const createWaves = (scene: Phaser.Scene) => {
               ? 10
               : 1,
 
-            shipType: eConfig.isUFO ? 9 : 1 + shipUpgrades
+            shipType: eConfig.isUFO ? 9 : 1 + shipUpgrades,
+            terminate: group.terminate
           }
         )
         enemy.enemiesToWaitFor = lastBatchEnemies
