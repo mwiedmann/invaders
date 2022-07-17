@@ -8,7 +8,9 @@ export const gameSettings = {
   playerLaserForce: 0.35,
   marchSpeed: 50,
   marchSize: 80,
-  showFrameRate: false
+  showFrameRate: false,
+  maxDivers: 5,
+  maxLasers: 5
 }
 
 export const settingsHelpers = {

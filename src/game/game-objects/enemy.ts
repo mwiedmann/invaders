@@ -39,7 +39,7 @@ export const createEnemy = (
     0,
     {
       mass: 6,
-      circleRadius: 40,
+      circleRadius: shipType === 9 ? 80 : 40,
       collisionFilter: {
         mask: EnemyCollisionMask,
         category: CollisionCategory.Enemy
@@ -98,9 +98,14 @@ export class Enemy extends Phaser.Physics.Matter.Sprite implements Hitable {
 
     // Highlight the enemy in blue when they have more than 1 health
     // Their color will return to normal when hit
-    if (health > 1) {
+    if (shipType < 9 && health > 1) {
       const blue = 0x2222ff
       this.setTint(blue)
+    }
+
+    // The UFO rotates
+    if (shipType === 9) {
+      this.anims.play('enemy9')
     }
   }
 
@@ -182,7 +187,7 @@ export class Enemy extends Phaser.Physics.Matter.Sprite implements Hitable {
 
       // Once pointing close enough to the path point, just set the exact angle
       // This prevents shaking when pointing almost at the exact angle
-      if (Phaser.Math.Within(angleDelta, 0, turnAmount * 2)) {
+      if (Phaser.Math.Within(angleDelta, 0, turnAmount * 2) || distanceToPos <= 96) {
         this.rotation = angleToPointer
       } else {
         this.rotation += angleDeltaDirection * turnAmount
@@ -199,7 +204,7 @@ export class Enemy extends Phaser.Physics.Matter.Sprite implements Hitable {
       // Once they are close enough, point them at the next spot.
       // TODO: We still sometimes see an enemy tightly circling trying to get close to a spot
       // Maybe nothing to do here as the player can just shoot it and it doesn't happen often.
-      if (distanceToPos <= 32) {
+      if (distanceToPos <= 48) {
         this.moveTo = undefined
 
         // If following a path, look for the next point or starting returning home

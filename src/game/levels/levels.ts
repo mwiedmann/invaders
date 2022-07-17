@@ -98,332 +98,186 @@ const pathTypes = {
   ]
 }
 
+const paths = [
+  [
+    pathTypes.closeMidLoop,
+    [...pathTypes.farDown, ...pathTypes.closeTop],
+    [...pathTypes.mid, ...pathTypes.farTop],
+    [...pathTypes.closeDown, ...pathTypes.farMid]
+  ],
+  [
+    [...pathTypes.closeDown, ...pathTypes.midTop],
+    [...pathTypes.closeMidLoop, ...pathTypes.farMidLoop],
+    [...pathTypes.farDown, ...pathTypes.mid],
+    [...pathTypes.closeTop, ...pathTypes.farMid]
+  ],
+  [
+    [...pathTypes.closeDown, ...pathTypes.closeMidLoop],
+    [...pathTypes.farMid, ...pathTypes.closeTop],
+    [...pathTypes.midDown, ...pathTypes.midTop],
+    [...pathTypes.farTop, ...pathTypes.mid]
+  ],
+  [
+    [...pathTypes.closeMid, ...pathTypes.farTop],
+    [...pathTypes.midTop, ...pathTypes.farDown],
+    [...pathTypes.closeTop, ...pathTypes.midLoop],
+    [...pathTypes.farDown, ...pathTypes.farTop]
+  ],
+  [
+    [...pathTypes.farMid, ...pathTypes.farTop],
+    [...pathTypes.closeDown, ...pathTypes.midTop],
+    [...pathTypes.midTop, ...pathTypes.farMidLoop],
+    [...pathTypes.closeTop, ...pathTypes.farDown],
+    [...pathTypes.mid] // Boss
+  ]
+]
+
 type EnemyDef = {
-  type?: 1 | 2 | 3
-  health?: number
   x: number
   y: number
+  health?: number
+  shipType?: number
+}
+
+type GroupConfig = {
+  start: { side: -1 | 1; y: number }
+  path: Phaser.Math.Vector2[]
 }
 
 type Group = {
   enemies: EnemyDef[]
-  start: { side: -1 | 1; y: number }
-  path: Phaser.Math.Vector2[]
   flip?: boolean
 }
 
-type Wave = Group[]
+type Wave = Group & GroupConfig
 
 type Level = Wave[]
 
-export const levels: Level[] = [
-  // Level 1
-  [
-    [
-      {
-        enemies: [
-          { x: 0, y: 1 },
-          { x: 1, y: 1 },
-          { x: 0, y: 2 },
-          { x: 1, y: 2 },
-          { x: 2, y: 1 },
-          { x: 2, y: 2 }
-        ],
-        start: { side: -1, y: settingsHelpers.fieldHeight3Quarters },
-        path: pathTypes.closeMidLoop,
-        flip: true
-      }
-    ],
-    [
-      {
-        enemies: [
-          { x: 3, y: 0, type: 2, health: 2 },
-          { x: 3, y: 1 },
-          { x: 4, y: 0, type: 2, health: 2 },
-          { x: 4, y: 1 },
-          { x: 5, y: 0, type: 2, health: 2 },
-          { x: 3, y: 2 },
-          { x: 6, y: 0, type: 2, health: 2 },
-          { x: 4, y: 2 }
-        ],
-        start: { side: -1, y: settingsHelpers.fieldHeightMid },
-        path: [...pathTypes.farDown, ...pathTypes.closeTop]
-      }
-    ],
-    [
-      {
-        enemies: [
-          { x: 6, y: 1 },
-          { x: 5, y: 1 },
-          { x: 6, y: 2 },
-          { x: 5, y: 2 }
-        ],
-        start: { side: 1, y: settingsHelpers.fieldHeightTopPath },
-        path: [...pathTypes.farMid, ...pathTypes.closeTop]
-      }
-    ],
-    [
-      {
-        enemies: [
-          { x: 4, y: 3 },
-          { x: 5, y: 3 },
-          { x: 6, y: 3 },
-          { x: 7, y: 3 }
-        ],
-        start: { side: -1, y: settingsHelpers.fieldHeight3Quarters },
-        path: [...pathTypes.farDown, ...pathTypes.midTop]
-      }
-    ]
-  ],
+export const makeLevel = (level: number): Level => {
+  let pathIdx = (level - 1) % paths.length
+  const enemies = level % 5 === 0 ? bossLevel : standardLevels
+  const waves = enemies.map((e, idx) => {
+    // "flip" paths will be on both sides so just set the side to -1
+    let side = e.flip ? -1 : (level + idx) % 2 === 1 ? 1 : -1
+    const eCopy: Group = JSON.parse(JSON.stringify(e)) as Group
 
-  // Level 2
-  [
-    [
-      {
-        enemies: [
-          { x: 0, y: 1 },
-          { x: 1, y: 1 },
-          { x: 0, y: 2 },
-          { x: 1, y: 2 },
-          { x: 2, y: 1 },
-          { x: 2, y: 2 }
-        ],
-        start: { side: -1, y: settingsHelpers.fieldHeightTopPath },
-        path: [...pathTypes.closeDown, ...pathTypes.farTop],
-        flip: true
-      }
-    ],
-    [
-      {
-        enemies: [
-          { x: 3, y: 0, type: 2, health: 2 },
-          { x: 3, y: 1 },
-          { x: 4, y: 0, type: 2, health: 2 },
-          { x: 4, y: 1 },
-          { x: 5, y: 0, type: 2, health: 2 },
-          { x: 3, y: 2 },
-          { x: 6, y: 0, type: 2, health: 2 },
-          { x: 4, y: 2 }
-        ],
-        start: { side: 1, y: settingsHelpers.fieldHeightMid },
-        path: [...flipPath(pathTypes.closeMidLoop), ...flipPath(pathTypes.farMidLoop)]
-      }
-    ],
-    [
-      {
-        enemies: [
-          { x: 6, y: 1 },
-          { x: 2, y: 0, type: 2, health: 2 },
-          { x: 5, y: 1 },
-          { x: 7, y: 0, type: 2, health: 2 },
-          { x: 6, y: 2 },
-          { x: 5, y: 2 }
-        ],
-        start: { side: -1, y: settingsHelpers.fieldHeight3Quarters },
-        path: [...pathTypes.farDown, ...pathTypes.midTop]
-      }
-    ],
-    [
-      {
-        enemies: [
-          { x: 2, y: 3 },
-          { x: 3, y: 3 },
-          { x: 4, y: 3 },
-          { x: 5, y: 3 },
-          { x: 6, y: 3 },
-          { x: 7, y: 3 }
-        ],
-        start: { side: 1, y: settingsHelpers.fieldHeight3Quarters },
-        path: [...flipPath(pathTypes.farTop)]
-      }
-    ]
-  ],
+    // The paths are designed for the left side (-1), flip the vectors if starting from the right
+    const path = side === 1 ? flipPath(paths[pathIdx][idx]) : paths[pathIdx][idx]
 
-  // Level 3
-  [
-    [
-      {
-        enemies: [
-          { x: 0, y: 1 },
-          { x: 1, y: 1, type: 2 },
-          { x: 0, y: 2 },
-          { x: 1, y: 2 },
-          { x: 2, y: 1, type: 2 },
-          { x: 2, y: 2 }
-        ],
-        start: { side: -1, y: settingsHelpers.fieldHeightMid },
-        path: [...pathTypes.closeTop, ...pathTypes.closeDown],
-        flip: true
-      }
+    return {
+      ...eCopy,
+      start: { side, y: settingsHelpers.fieldHeightMid },
+      path
+    } as Wave
+  })
+
+  return waves
+}
+
+// 34 enemies each level
+// 8 - 10 - 10 - 6
+const standardLevels: Group[] = [
+  {
+    enemies: [
+      { x: 0, y: 1 },
+      { x: 1, y: 1 },
+      { x: 0, y: 2 },
+      { x: 1, y: 2 },
+      { x: 2, y: 1 },
+      { x: 2, y: 2 }
     ],
-    [
-      {
-        enemies: [
-          { x: 3, y: 1 },
-          { x: 3, y: 0, type: 2, health: 2 },
-          { x: 4, y: 1 },
-          { x: 5, y: 0, type: 3, health: 2 },
-          { x: 3, y: 2 },
-          { x: 6, y: 0, type: 2, health: 2 },
-          { x: 4, y: 2 },
-          { x: 7, y: 0, type: 2, health: 2 }
-        ],
-        start: { side: 1, y: settingsHelpers.fieldHeightTopPath },
-        path: [...flipPath(pathTypes.midLoop), ...flipPath(pathTypes.farMid)]
-      }
-    ],
-    [
-      {
-        enemies: [
-          { x: 1, y: 0, type: 2 },
-          { x: 6, y: 1 },
-          { x: 2, y: 0, type: 2, health: 2 },
-          { x: 5, y: 1 },
-          { x: 8, y: 0, type: 2 },
-          { x: 6, y: 2 },
-          { x: 4, y: 0, type: 3, health: 2 },
-          { x: 5, y: 2 }
-        ],
-        start: { side: 1, y: settingsHelpers.fieldHeight3Quarters },
-        path: [...pathTypes.farDown, ...pathTypes.midTop]
-      }
-    ],
-    [
-      {
-        enemies: [
-          { x: 2, y: 3 },
-          { x: 3, y: 3 },
-          { x: 4, y: 3 },
-          { x: 5, y: 3 },
-          { x: 6, y: 3 },
-          { x: 7, y: 3 }
-        ],
-        start: { side: -1, y: settingsHelpers.fieldHeightMid },
-        path: [...pathTypes.farTop]
-      }
+    flip: true
+  },
+  {
+    enemies: [
+      { x: 3, y: 1 },
+      { x: 3, y: 0 },
+      { x: 4, y: 1 },
+      { x: 5, y: 0 },
+      { x: 3, y: 2 },
+      { x: 6, y: 0 },
+      { x: 4, y: 2 },
+      { x: 7, y: 0 }
     ]
-  ]
+  },
+  {
+    enemies: [
+      { x: 1, y: 0 },
+      { x: 6, y: 1 },
+      { x: 2, y: 0 },
+      { x: 5, y: 1 },
+      { x: 8, y: 0 },
+      { x: 6, y: 2 },
+      { x: 4, y: 0 },
+      { x: 5, y: 2 }
+    ]
+  },
+  {
+    enemies: [
+      { x: 2, y: 3 },
+      { x: 3, y: 3 },
+      { x: 4, y: 3 },
+      { x: 5, y: 3 },
+      { x: 6, y: 3 },
+      { x: 7, y: 3 }
+    ]
+  }
 ]
 
-// export const levelsOld = [
-//   {
-//     enemies: [
-//       [1, 1, 1, 1, 1],
-//       [1, 1, 1, 1, 1],
-//       [1, 1, 1]
-//     ],
-//     paths: [
-//       {
-//         start: { side: 0, y: settingsHelpers.fieldHeightTopPath },
-//         path: pathTypes.quarterZigZag
-//       },
-//       {
-//         start: { side: 1, y: settingsHelpers.fieldHeightTopPath },
-//         path: flipPath(pathTypes.quarterZigZag)
-//       },
-//       {
-//         start: { side: 0, y: settingsHelpers.fieldHeight3Quarters },
-//         path: pathTypes.midSideLoop
-//       }
-//     ]
-//   },
-//   {
-//     enemies: [
-//       [1, 1, 1, 1, 1, 1],
-//       [1, 1, 1, 1, 1, 1],
-//       [1, 1, 1, 1]
-//     ],
-//     paths: [
-//       {
-//         start: { side: 0, y: settingsHelpers.fieldHeightTopPath },
-//         path: pathTypes.midZig
-//       },
-//       {
-//         start: { side: 1, y: settingsHelpers.fieldHeight3Quarters },
-//         path: flipPath(pathTypes.midDoubleLoop)
-//       },
-//       {
-//         start: { side: 0, y: settingsHelpers.fieldHeightMid },
-//         path: pathTypes.upAndDown
-//       }
-//     ]
-//   },
-//   {
-//     enemies: [
-//       [1, 1, 1, 1, 1, 1, 1],
-//       [1, 1, 1, 1, 1, 1, 1],
-//       [1, 1, 1, 1, 1],
-//       [1, 1]
-//     ],
-//     paths: [
-//       {
-//         start: { side: 1, y: settingsHelpers.fieldHeight3Quarters },
-//         path: flipPath(pathTypes.bottomMidLoopZig)
-//       },
-//       {
-//         start: { side: 0, y: settingsHelpers.fieldHeight3Quarters },
-//         path: pathTypes.midDoubleLoop
-//       },
-//       {
-//         start: { side: 0, y: settingsHelpers.fieldHeightTopPath },
-//         path: pathTypes.quarterZigZag
-//       },
-//       {
-//         start: { side: 1, y: settingsHelpers.fieldHeightMid },
-//         path: pathTypes.midZig
-//       }
-//     ]
-//   },
-//   {
-//     enemies: [
-//       [1, 1, 1, 1, 1, 1, 1, 1, 1],
-//       [1, 1, 1, 1, 1, 1, 1, 1],
-//       [1, 1, 1, 1, 1, 1],
-//       [1, 1, 1, 1]
-//     ],
-//     paths: [
-//       {
-//         start: { side: 1, y: settingsHelpers.fieldHeightMid },
-//         path: flipPath(pathTypes.midDoubleLoop)
-//       },
-//       {
-//         start: { side: 1, y: settingsHelpers.fieldHeight3Quarters },
-//         path: flipPath(pathTypes.upAndDown)
-//       },
-//       {
-//         start: { side: 0, y: settingsHelpers.fieldHeightTopPath },
-//         path: pathTypes.midSideLoop
-//       },
-//       {
-//         start: { side: 0, y: settingsHelpers.fieldHeightMid },
-//         path: pathTypes.quarterZigZag
-//       }
-//     ]
-//   },
-//   {
-//     enemies: [
-//       [1, 1, 1, 1, 1, 1, 1, 1, 1],
-//       [1, 1, 1, 1, 1, 1, 1, 1, 1],
-//       [1, 1, 1, 1, 1, 1, 1],
-//       [1, 1, 1, 1, 1, 1]
-//     ],
-//     paths: [
-//       {
-//         start: { side: 0, y: settingsHelpers.fieldHeight3Quarters },
-//         path: pathTypes.upAndDown
-//       },
-//       {
-//         start: { side: 1, y: settingsHelpers.fieldHeight3Quarters },
-//         path: flipPath(pathTypes.midDoubleLoop)
-//       },
-//       {
-//         start: { side: 1, y: settingsHelpers.fieldHeightTopPath },
-//         path: flipPath(pathTypes.quarterZigZag)
-//       },
-//       {
-//         start: { side: 0, y: settingsHelpers.fieldHeightMid },
-//         path: pathTypes.bottomMidLoopZig
-//       }
-//     ]
-//   }
-// ]
+const bossLevel: Group[] = [
+  {
+    enemies: [
+      { x: 1, y: 3 },
+      { x: 2, y: 3 },
+      { x: 3, y: 3 },
+      { x: 4, y: 3 },
+      { x: 5, y: 3 },
+      { x: 6, y: 3 },
+      { x: 7, y: 3 },
+      { x: 8, y: 3 }
+    ]
+  },
+  {
+    enemies: [
+      { x: 0, y: 2 },
+      { x: 1, y: 2 },
+      { x: 2, y: 2 },
+      { x: 3, y: 2 },
+      { x: 4, y: 2 },
+      { x: 5, y: 2 },
+      { x: 6, y: 2 },
+      { x: 7, y: 2 },
+      { x: 8, y: 2 },
+      { x: 9, y: 2 }
+    ]
+  },
+  {
+    enemies: [
+      { x: 0, y: 1 },
+      { x: 1, y: 1 },
+      { x: 2, y: 1 },
+      { x: 3, y: 1 },
+      // Gap for UFO
+      { x: 6, y: 1 },
+      { x: 7, y: 1 },
+      { x: 8, y: 1 },
+      { x: 9, y: 1 }
+    ]
+  },
+  {
+    enemies: [
+      { x: 0, y: 0 },
+      { x: 1, y: 0 },
+      { x: 2, y: 0 },
+      { x: 3, y: 0 },
+      // Gap for UFO
+      { x: 6, y: 0 },
+      { x: 7, y: 0 },
+      { x: 8, y: 0 },
+      { x: 9, y: 0 }
+    ]
+  },
+  {
+    enemies: [{ x: 4.5, y: 0.5, shipType: 9, health: 10 }]
+  }
+]

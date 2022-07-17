@@ -36,6 +36,7 @@ export class GameScene extends Phaser.Scene {
     this.load.spritesheet('enemy1', 'images/enemy1-84x104.png', { frameWidth: 84, frameHeight: 104 })
     this.load.spritesheet('enemy2', 'images/enemy2-84x103.png', { frameWidth: 84, frameHeight: 103 })
     this.load.spritesheet('enemy3', 'images/enemy3-84x97.png', { frameWidth: 84, frameHeight: 97 })
+    this.load.spritesheet('enemy9', 'images/ufo-182x182x4.png', { frameWidth: 182, frameHeight: 182 })
     this.load.image('enemy-laser', 'images/enemy-laser.png')
 
     // Particles
@@ -53,6 +54,14 @@ export class GameScene extends Phaser.Scene {
       p1Special: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.X),
       pause: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.P)
     }
+
+    this.anims.create({
+      key: 'enemy9',
+      frames: this.anims.generateFrameNumbers('enemy9', {}),
+      frameRate: 12,
+      repeat: -1
+      // yoyo: true,
+    })
   }
 
   update(this: Phaser.Scene, time: number, delta: number) {
