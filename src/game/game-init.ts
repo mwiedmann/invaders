@@ -4,6 +4,7 @@ import { gameState, IGamePhase } from './states'
 import { gameUpdate } from './states/game'
 import { titleUpdate } from './states/title'
 import { scorelistUpdate } from './states/scorelist'
+import { createStarField, updateStarField } from './states/starfield'
 
 export let controls: {
   cursors: Phaser.Types.Input.Keyboard.CursorKeys
@@ -66,9 +67,13 @@ export class GameScene extends Phaser.Scene {
       repeat: -1
       // yoyo: true,
     })
+
+    createStarField(this)
   }
 
   update(this: Phaser.Scene, time: number, delta: number) {
+    updateStarField(this, time, delta)
+
     let init = false
     if (lastState !== gameState.phase) {
       lastState = gameState.phase

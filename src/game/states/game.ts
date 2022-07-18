@@ -26,8 +26,6 @@ const gameInit = (scene: Phaser.Scene) => {
   subStateTime = 3000
   createScoreText(scene)
 
-  createStarField(scene)
-
   // We can show an optional framerate
   if (gameSettings.showFrameRate) {
     frameRateText = createFrameRateText(scene)
@@ -65,8 +63,6 @@ export const gameUpdate = (scene: Phaser.Scene, time: number, delta: number, ini
   // Some housekeeping each loop
   // Update the score and scroll the background
   updateScoreText(state.score)
-
-  updateStarField(scene, time, delta)
 
   // Update the march position
   // This is so the enemies slide back-and-forth together
@@ -131,8 +127,6 @@ export const gameUpdate = (scene: Phaser.Scene, time: number, delta: number, ini
       showLevel.destroy()
       showLevel = undefined
     }
-
-    cleanupStarField()
 
     state.playerProjectiles.destroy(true)
     state.enemyProjectiles.destroy(true)
