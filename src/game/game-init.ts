@@ -3,17 +3,20 @@ import { settingsHelpers, gameSettings } from './consts'
 import { gameState, IGamePhase } from './states'
 import { gameUpdate } from './states/game'
 import { titleUpdate } from './states/title'
+import { scorelistUpdate } from './states/scorelist'
 
 export let controls: {
   cursors: Phaser.Types.Input.Keyboard.CursorKeys
   p1Shoot: Phaser.Input.Keyboard.Key
   p1Special: Phaser.Input.Keyboard.Key
+  p1Suicide: Phaser.Input.Keyboard.Key
   pause: Phaser.Input.Keyboard.Key
 }
 
 const updateFunctions = {
   title: titleUpdate,
-  game: gameUpdate
+  game: gameUpdate,
+  scorelist: scorelistUpdate
 }
 
 let lastState: IGamePhase | undefined = undefined
@@ -52,6 +55,7 @@ export class GameScene extends Phaser.Scene {
       cursors: this.input.keyboard.createCursorKeys(),
       p1Shoot: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SHIFT),
       p1Special: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.X),
+      p1Suicide: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S),
       pause: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.P)
     }
 

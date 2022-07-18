@@ -18,7 +18,7 @@ export interface IState {
 
 export let state: IState
 
-export type IGamePhase = 'title' | 'game'
+export type IGamePhase = 'title' | 'game' | 'scorelist'
 
 interface IGameState {
   phase: IGamePhase
@@ -46,7 +46,7 @@ export const constructState = (scene: Phaser.Scene) => {
     marchDir: 1,
     level: 1,
     diveMax: 0,
-    laserMax: 2,
+    laserMax: 0,
     score: 0,
     fireParticleManager: scene.add.particles('fire1').setDepth(100),
     laserParticleManager: scene.add.particles('particle').setDepth(90),

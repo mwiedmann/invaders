@@ -48,6 +48,10 @@ export class Guy extends Phaser.Physics.Matter.Sprite implements Hitable {
       this.nuke()
     })
 
+    controls.p1Suicide.on('down', () => {
+      this.hit()
+    })
+
     this.setOnCollide(() => {
       this.hit()
     })
@@ -59,7 +63,7 @@ export class Guy extends Phaser.Physics.Matter.Sprite implements Hitable {
   }
 
   livesImages: Phaser.GameObjects.TileSprite
-  livesRemaining = 2
+  livesRemaining = gameSettings.startingExtraLives
   pointsToNextFreeGuy = 10000
   startX: number
   startY: number
@@ -71,6 +75,8 @@ export class Guy extends Phaser.Physics.Matter.Sprite implements Hitable {
 
   destroy() {
     controls.p1Shoot.removeAllListeners()
+    controls.p1Special.removeAllListeners()
+    controls.p1Suicide.removeAllListeners()
     this.livesImages.destroy()
     super.destroy()
   }

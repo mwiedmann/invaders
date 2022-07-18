@@ -2,10 +2,21 @@ import { controls } from '../game-init'
 import { constructState, gameState, state } from '.'
 import { gameSettings, settingsHelpers } from '../consts'
 import { createEnemy, Enemy } from '../game-objects/enemy'
+import { cleanupHighScores, showHighScores } from '../highscores'
 
 let titleScreen: Phaser.GameObjects.Image
 let nextShotTime = 0
 let shotTimeWait = 3000
+
+const initFont = (scene: Phaser.Scene) => {
+  const text = scene.add.text(0, 0, 'I', {
+    fontSize: `10px`,
+    color: 'yellow',
+    fontFamily: 'AstroSpace'
+  })
+
+  text.destroy()
+}
 
 export const titleUpdate = (scene: Phaser.Scene, time: number, delta: number, init: boolean) => {
   if (init) {
@@ -33,6 +44,13 @@ export const titleUpdate = (scene: Phaser.Scene, time: number, delta: number, in
     createEnemy(scene, 0, xPos + spacePerEnemy * 2, yPos + rowTwo, 5, 9)
     createEnemy(scene, 0, xPos + spacePerEnemy * 3, yPos + rowTwo, 6, 9)
     ;(state.enemies.getChildren() as Enemy[]).forEach((e) => (e.finishedFlyIn = true))
+
+    // The font is not always ready and this helps
+    // TODO: There are font loaders to solve this but had trouble with them
+    // Use this for now as it pretty much always works
+    initFont(scene)
+    setTimeout(() => showHighScores(scene, settingsHelpers.fieldHeightMid))
+
     return
   }
 
@@ -61,9 +79,11 @@ export const titleUpdate = (scene: Phaser.Scene, time: number, delta: number, in
   }
 
   // When fire is pressed, close the title screen and create a player and ball for testing
-  if (controls.p1Shoot.isDown) {
+  controls.p1Shoot.on('down', () => {
+    controls.p1Shoot.removeAllListeners()
     titleScreen.destroy()
+    cleanupHighScores(scene)
     constructState(scene)
     gameState.phase = 'game'
-  }
+  })
 }

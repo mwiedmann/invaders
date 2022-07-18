@@ -10,7 +10,8 @@ export const gameSettings = {
   marchSize: 80,
   showFrameRate: false,
   maxDivers: 5,
-  maxLasers: 5
+  maxLasers: 5,
+  startingExtraLives: 2
 }
 
 export const settingsHelpers = {

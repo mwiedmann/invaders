@@ -195,6 +195,6 @@ export const gameUpdate = (scene: Phaser.Scene, time: number, delta: number, ini
     state.player.destroy()
     state.level = 1
 
-    gameState.phase = 'title'
+    gameState.phase = 'scorelist'
   }
 }
