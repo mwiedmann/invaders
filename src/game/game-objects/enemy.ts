@@ -311,6 +311,13 @@ export class Enemy extends Phaser.Physics.Matter.Sprite implements Hitable {
         y: this.y
       })
 
+      // Big explosion for the UFO
+      if (this.shipType === 9) {
+        this.scene.sound.play('ufo-explosion')
+      } else {
+        this.scene.sound.play('alien-hit', { volume: 0.5 })
+      }
+
       state.enemies.remove(this)
       this.dead = true
       this.destroy()
@@ -328,6 +335,8 @@ export class Enemy extends Phaser.Physics.Matter.Sprite implements Hitable {
       if (this.health === 1) {
         this.clearTint()
       }
+
+      this.scene.sound.play('alien-shield-hit', { volume: 0.5 })
     }
   }
 

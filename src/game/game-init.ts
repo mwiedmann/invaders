@@ -1,5 +1,5 @@
 import * as Phaser from 'phaser'
-import { settingsHelpers, gameSettings } from './consts'
+import { gameSettings } from './consts'
 import { gameState, IGamePhase } from './states'
 import { gameUpdate } from './states/game'
 import { titleUpdate } from './states/title'
@@ -12,6 +12,7 @@ export let controls: {
   p1Special: Phaser.Input.Keyboard.Key
   p1Suicide: Phaser.Input.Keyboard.Key
   pause: Phaser.Input.Keyboard.Key
+  mute: Phaser.Input.Keyboard.Key
 }
 
 const updateFunctions = {
@@ -49,6 +50,12 @@ export class GameScene extends Phaser.Scene {
 
     // Backgrounds
     this.load.image('background', 'images/background.png')
+
+    // Sounds
+    this.load.audio('guy-laser', 'sounds/guy-laser.mp3')
+    this.load.audio('ufo-explosion', 'sounds/ufo-explosion.mp3')
+    this.load.audio('alien-hit', 'sounds/alien-hit.mp3')
+    this.load.audio('alien-shield-hit', 'sounds/alien-shield-hit.mp3')
   }
 
   create(this: Phaser.Scene) {
@@ -57,7 +64,8 @@ export class GameScene extends Phaser.Scene {
       p1Shoot: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SHIFT),
       p1Special: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.X),
       p1Suicide: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S),
-      pause: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.P)
+      pause: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.P),
+      mute: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.M)
     }
 
     this.anims.create({
@@ -69,6 +77,7 @@ export class GameScene extends Phaser.Scene {
     })
 
     createStarField(this)
+    // constructSounds(this)
   }
 
   update(this: Phaser.Scene, time: number, delta: number) {

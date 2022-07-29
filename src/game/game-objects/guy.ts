@@ -41,6 +41,7 @@ export class Guy extends Phaser.Physics.Matter.Sprite implements Hitable {
         return
       }
       createLaser(this.scene, this.x, this.y, true)
+      this.scene.sound.play('guy-laser', { volume: 0.4 })
     })
 
     // This is just for a quick way to clear a level for testing

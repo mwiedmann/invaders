@@ -51,6 +51,15 @@ export const titleUpdate = (scene: Phaser.Scene, time: number, delta: number, in
     initFont(scene)
     setTimeout(() => showHighScores(scene, settingsHelpers.fieldHeightMid))
 
+    // When fire is pressed, close the title screen and create a player and ball for testing
+    controls.p1Shoot.on('down', () => {
+      controls.p1Shoot.removeAllListeners()
+      titleScreen.destroy()
+      cleanupHighScores(scene)
+      constructState(scene)
+      gameState.phase = 'game'
+    })
+
     return
   }
 
@@ -77,13 +86,4 @@ export const titleUpdate = (scene: Phaser.Scene, time: number, delta: number, in
       nextShotTime = time + Phaser.Math.RND.between(125, 500)
     }
   }
-
-  // When fire is pressed, close the title screen and create a player and ball for testing
-  controls.p1Shoot.on('down', () => {
-    controls.p1Shoot.removeAllListeners()
-    titleScreen.destroy()
-    cleanupHighScores(scene)
-    constructState(scene)
-    gameState.phase = 'game'
-  })
 }

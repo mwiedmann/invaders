@@ -40,6 +40,10 @@ const gameInit = (scene: Phaser.Scene) => {
       scene.matter.world.resume()
     }
   })
+
+  controls.mute.on('down', () => {
+    scene.sound.volume = scene.sound.volume === 0 ? 1 : 0
+  })
 }
 
 // This runs once per game loop (hopefully 60 times a sec)
@@ -133,6 +137,9 @@ export const gameUpdate = (scene: Phaser.Scene, time: number, delta: number, ini
     state.enemies.destroy(true)
     state.player.destroy()
     state.level = 1
+
+    controls.pause.removeAllListeners()
+    controls.mute.removeAllListeners()
 
     gameState.phase = 'scorelist'
   }
