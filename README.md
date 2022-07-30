@@ -2,6 +2,7 @@
 
 A Galaga like arcade game written in TypeScript using the Phaser 3 game engine.
 
+![Image](./title-screen.jpg)
 ![Image](./invaders-screen.jpg)
 
 # Running and building

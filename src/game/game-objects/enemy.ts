@@ -1,7 +1,7 @@
 import * as Phaser from 'phaser'
 import { CollisionCategory, EnemyCollisionMask } from '../collisions'
 import { gameSettings, settingsHelpers } from '../consts'
-import { state } from '../states'
+import { gameState, state } from '../states'
 import { createFloatingPoints } from './floatingPoints'
 import { Hitable } from './hit'
 import { createLaser } from './laser'
@@ -258,6 +258,10 @@ export class Enemy extends Phaser.Physics.Matter.Sprite implements Hitable {
             gameSettings.screenHeight + gameSettings.screenHeight / 4
           )
           this.nextPathPoint()
+          // Omnly play the diving sound during a game
+          if (gameState.phase === 'game') {
+            this.scene.sound.play('alien-diving', { volume: 0.2, rate: Phaser.Math.RND.realInRange(0.8, 1.05) })
+          }
         } else {
           // Too many divers, get a new dive time
           this.newPathTime(time)
@@ -286,8 +290,8 @@ export class Enemy extends Phaser.Physics.Matter.Sprite implements Hitable {
       // This ship is just sitting in marching order...lowest points
       let score = 25 * this.shipType + 50 * (this.startingHealth - 1)
       let showPoints = false
-      if (this.moveTo) {
-        // Medium score if diving
+      if (this.moveTo || this.returning) {
+        // Medium score if diving or returning
         score = 50 + 50 * this.shipType + 100 * (this.startingHealth - 1)
         showPoints = true
       } else if (this.path[0]) {
@@ -313,7 +317,7 @@ export class Enemy extends Phaser.Physics.Matter.Sprite implements Hitable {
 
       // Big explosion for the UFO
       if (this.shipType === 9) {
-        this.scene.sound.play('ufo-explosion')
+        this.scene.sound.play('ufo-explosion', { rate: 0.8 })
       } else {
         this.scene.sound.play('alien-hit', { volume: 0.5 })
       }
@@ -333,6 +337,10 @@ export class Enemy extends Phaser.Physics.Matter.Sprite implements Hitable {
       })
 
       if (this.health === 1) {
+        // Make the UFO red when only 1 hit left
+        if (this.shipType === 9) {
+          this.setTint(0xff4444)
+        }
         this.clearTint()
       }
 
@@ -360,7 +368,8 @@ export class Enemy extends Phaser.Physics.Matter.Sprite implements Hitable {
     return (
       !this.terminate &&
       this.x >= gameSettings.playerEdge &&
-      this.y <= gameSettings.screenWidth - gameSettings.playerEdge &&
+      this.x <= gameSettings.screenWidth - gameSettings.playerEdge &&
+      this.y <= settingsHelpers.playerYPosition &&
       this.enemiesToWaitFor.length === 0 &&
       (this.path[0] || this.returning || this.moveTo) &&
       this.lastShot + shotTimeWait <= time
@@ -370,5 +379,7 @@ export class Enemy extends Phaser.Physics.Matter.Sprite implements Hitable {
   shoot(time: number) {
     this.lastShot = time
     createLaser(this.scene, this.x, this.y, false)
+    // Laser sound creates too many sounds playing
+    // this.scene.sound.play('alien-laser', { volume: 0.2, rate: 3 })
   }
 }

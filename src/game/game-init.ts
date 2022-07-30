@@ -53,9 +53,11 @@ export class GameScene extends Phaser.Scene {
 
     // Sounds
     this.load.audio('guy-laser', 'sounds/guy-laser.mp3')
+    this.load.audio('guy-hit', 'sounds/guy-hit.mp3')
     this.load.audio('ufo-explosion', 'sounds/ufo-explosion.mp3')
     this.load.audio('alien-hit', 'sounds/alien-hit.mp3')
     this.load.audio('alien-shield-hit', 'sounds/alien-shield-hit.mp3')
+    this.load.audio('alien-diving', 'sounds/alien-diving.mp3')
   }
 
   create(this: Phaser.Scene) {

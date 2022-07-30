@@ -45,9 +45,9 @@ export class Guy extends Phaser.Physics.Matter.Sprite implements Hitable {
     })
 
     // This is just for a quick way to clear a level for testing
-    controls.p1Special.on('down', () => {
-      this.nuke()
-    })
+    // controls.p1Special.on('down', () => {
+    //   this.nuke()
+    // })
 
     controls.p1Suicide.on('down', () => {
       this.hit()
@@ -123,6 +123,8 @@ export class Guy extends Phaser.Physics.Matter.Sprite implements Hitable {
       x: this.x,
       y: this.y
     })
+
+    this.scene.sound.play('guy-hit', { rate: 0.8, volume: 1.5 })
 
     // The player will be invisible for a few seconds after death.
     // They will then come back or the game will end
